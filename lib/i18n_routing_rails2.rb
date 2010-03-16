@@ -76,7 +76,7 @@ module ActionController
               alias_method :gl#{selector}, :#{selector}
 
               def #{selector}(*args)
-                selector_g = '#{rlang}'.gsub('glang', lang).to_sym
+                selector_g = '#{rlang}'.gsub('glang', I18n.locale.to_s).to_sym
 
                 #logger.debug "Call routes : #{selector} => \#{selector_g} (#{rlang}) "
                 if respond_to? selector_g and selector_g != :#{selector}
@@ -154,7 +154,7 @@ module ActionController
         I18n.available_locales.each do |l|
           I18n.locale = l
           nt = "#{l}_#{name}"
-          if nt != name and name.t(nil, nil, namespace) != name
+          if nt != name and I18n.t(name, :scope => namespace, :default => name) != name
             langs << l.to_s
           end
         end
