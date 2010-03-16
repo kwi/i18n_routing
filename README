@@ -1,0 +1,58 @@
+I18nRouting
+===========
+
+i18n_routing is a rails plugin created to automatically use translated routes for your rails project.
+
+For examples :
+in english you will have : /users
+And in french : /utilisateurs
+
+This two resources, are juste declared once in your routes.rb and the good one is automatically selected when you use users_path depending on the I18n.locale
+The translation is done simply by using I18n.t on your route name. translations are scoped : named_route / resource / resources
+
+Works with : named_route (Rails 2) or any match (Rails 3), resource and resources
+
+Gem needed: i18n with any backend
+
+Warning: Rails 2.3 version is old and need clean up and intensive refactoring.
+
+Usage in your routes.rb
+=======================
+
+For Rails 3 :
+
+Simply declare a localized block with :
+
+localized(I18n.available_locales, :verbose => true) do
+  match 'about' => 'contents#about', :as  => :about
+
+  resources :users
+  resource  :forgot_my_password
+end
+
+For each locales you pass to localized, the i18n_routing plugin will try to translate the route.
+
+
+For Rails 2.3.x :
+
+map.with_options :globalized => true do |m|
+  m.about, 'about', {:controller => 'contents', :action => :about})
+
+  m.resources :users
+  m.resource  :forgot_my_password
+end
+
+Automatically try to translate routes with each locales in I18n.available_locales
+
+Tested with rails 2.3.5 and Rails 3 beta
+
+
+TODO
+====
+
+  * Clean up and refactoring Rails 2 version
+  * Testing
+  * Bug fix ?
+
+
+Copyright (c) 2010 Guillaume Luccisano (Chugulu Games), released under the MIT license
