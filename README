@@ -10,11 +10,19 @@ And in french : /utilisateurs
 This two resources, are juste declared once in your routes.rb and the good one is automatically selected when you use users_path depending on the I18n.locale
 The translation is done simply by using I18n.t on your route name. translations are scoped : named_route / resource / resources
 
+NO translations are made on runtime, all is precompiled when building routes at startup.
+
 Works with : named_route (Rails 2) or any match (Rails 3), resource and resources
 
 Gem needed: i18n with any backend
 
 Warning: Rails 2.3 version is old and need clean up and intensive refactoring.
+
+Installation :
+==============
+
+In your rails plugins folder : 
+git clone git@github.com:kwi/i18n_routing.git
 
 Usage in your routes.rb
 =======================
