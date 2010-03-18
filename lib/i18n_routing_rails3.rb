@@ -16,7 +16,7 @@ module I18nRouting
         # Check for translated resource
         @locales.each do |locale|
           I18n.locale = locale
-          localized_path = I18n.t(resource.name, :scope => type, :default => nil)
+          localized_path = I18n.t(resource.name, :scope => type, :default => resource.name)
 
           # A translated route exists :
           if localized_path and localized_path != resource.name
