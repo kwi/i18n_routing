@@ -22,7 +22,7 @@ Installation :
 ==============
 
 In your rails plugins folder : 
-git clone git@github.com:kwi/i18n_routing.git
+git clone git://github.com/kwi/i18n_routing.git
 
 Usage in your routes.rb
 =======================
