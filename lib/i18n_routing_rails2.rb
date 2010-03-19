@@ -194,19 +194,9 @@ module ActionController
     end
 
     private
+      alias_method :gl_action_options_for, :action_options_for
       def action_options_for(action, resource, method = nil, resource_options = {})
-        default_options = { :action => action.to_s }
-        require_id = !resource.kind_of?(SingletonResource)
-        force_id = resource_options[:force_id] && !resource.kind_of?(SingletonResource)
-
-        opts = case default_options[:action]
-          when "index", "new"; default_options.merge(add_conditions_for(resource.conditions, method || :get)).merge(resource.requirements)
-          when "create";       default_options.merge(add_conditions_for(resource.conditions, method || :post)).merge(resource.requirements)
-          when "show", "edit"; default_options.merge(add_conditions_for(resource.conditions, method || :get)).merge(resource.requirements(require_id))
-          when "update";       default_options.merge(add_conditions_for(resource.conditions, method || :put)).merge(resource.requirements(require_id))
-          when "destroy";      default_options.merge(add_conditions_for(resource.conditions, method || :delete)).merge(resource.requirements(require_id))
-          else                 default_options.merge(add_conditions_for(resource.conditions, method)).merge(resource.requirements(force_id))
-        end
+        opts = gl_action_options_for(action, resource, method, resource_options)
 
         if resource.options[:globalized]
           Thread.current[:globalized] = resource.plural
