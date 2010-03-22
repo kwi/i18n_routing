@@ -3,7 +3,6 @@
 #
 # WARNING : Old and dirty Rails 2.x code
 # Need clean up and intensive refactoring
-# If you can, use the Rails 3 code wich is really cleaner !
 #
 
 module ActionController
@@ -13,34 +12,19 @@ module ActionController
       alias_method :mkd_initialize, :initialize
       def initialize(segments = [], requirements = {}, conditions = {})
         @glang = requirements.delete(:glang)
-        @gnlang = requirements.delete(:gnot_lang)
         mkd_initialize(segments, requirements, conditions)
       end
 
       private
+        alias_method :mkd_generation_requirements, :generation_requirements
+        # Add locale requirements to ensure good route is used when using url_for
         def generation_requirements
-          requirement_conditions = requirements.collect do |key, req|
-            if req.is_a? Regexp
-              value_regexp = Regexp.new "\\A#{req.to_s}\\Z"
-              "hash[:#{key}] && #{value_regexp.inspect} =~ options[:#{key}]"
-            else
-              "hash[:#{key}] == #{req.inspect}"
-            end
-          end
-          if !requirement_conditions.empty?
-            r = requirement_conditions * ' && '
-            if @gnlang
-              @gnlang.each do |l|
-                r << " && I18n.locale != :#{l}"
-              end
-            elsif @glang
-              r << " && I18n.locale == :#{@glang}"
-            end
-            return r
-          else
-            nil
+          r = mkd_generation_requirements
+          if @glang and !r.blank?
+            r << " and I18n.locale == :#{@glang}"
           end
           
+          return r
         end
     end
   end
@@ -48,18 +32,32 @@ end
 
 module ActionController
   module Routing
-    class RouteSet #:nodoc: 
+    class RouteSet #:nodoc:
+      
+      attr :locales, true
+      attr :i18n_verbose, true
+      
+      class Mapper
+        def localized(locales = I18n.available_locales, opts = {})
+          old_value = @set.locales
+          @set.locales = locales
+          @set.i18n_verbose ||= opts.delete(:verbose)
+          yield
+        ensure
+          @set.locales = old_value
+        end
+        
+      end
+       
       class NamedRouteCollection #:nodoc:
 
         alias_method :mkd_define_url_helper, :define_url_helper
         def define_url_helper(route, name, kind, options)
-
           gl = Thread.current[:globalized]
           gls = Thread.current[:globalized_s]
 
           mkd_define_url_helper(route, name, kind, options)
 
-          # globalization surcouche
           if gl
             selector = url_helper_name(name, kind)
             
@@ -94,46 +92,26 @@ module ActionController
 
       alias_method :gl_add_named_route, :add_named_route
       def add_named_route(name, path, options = {}) #:nodoc:
-        if options[:globalized] and !path.blank? and !options[:gnot_lang]
+        if @locales and !path.blank?
 
-          options.delete(:globalized)
-
-          # On check quelle route on peut generer
           name = name.to_s
-          langs = []
-          I18n.available_locales.each do |l|
+        
+          @locales.each do |l|
             I18n.locale = l
             nt = "#{l}_#{name}"
-            if nt != name
-              langs << l.to_s
+            if nt != name and ((t = I18n.t(path.to_s, :scope => :named_routes_path, :default => path.to_s)) != path)
+              gl_add_named_route(nt, t, options.merge(:glang => l))
+              puts("[I18n] > localize %-10s: %40s (%s) => %s" % ['route', name, l, t]) if @i18n_verbose
             end
           end
-
-          # Cree la vrai route
-          if langs.size > 0
-            options.merge!(:gnot_lang => langs)
-            Thread.current[:globalized] = name
-          end
           
-
-          ### Attention: ici on repasse par le named_route du dessus
+          Thread.current[:globalized] = true
           gl_add_named_route(name, path, options)
-          
           Thread.current[:globalized] = nil
-
-          options.delete(:gnot_lang)
-          langs.each do |l|
-            I18n.locale = l
-            nt = "#{l}_#{name}"
-            troute = I18n.t path.to_s, :scope => :named_routes_path, :default => path.to_s
-            gl_add_named_route(nt, troute, options.merge(:glang => l))
-          end
-
-        else
-          options.delete(:globalized)
-          gl_add_named_route(name, path, options)
+          return
         end
 
+        gl_add_named_route(name, path, options)
       end
 
     end
@@ -143,43 +121,35 @@ end
 module ActionController
   module Resources
     def create_globalized_resources(type, namespace, *entities, &block)
-      opts = entities.dup.extract_options!
-
-      if opts[:globalized]
+      if @set.locales
         name = entities.dup.shift.to_s
   
-        opts[:controller] = name if !opts[:controller]
+        options = entities.extract_options!
+        opts = options.dup
   
-        langs = []
-        I18n.available_locales.each do |l|
-          I18n.locale = l
-          nt = "#{l}_#{name}"
-          if nt != name and I18n.t(name, :scope => namespace, :default => name) != name
-            langs << l.to_s
+        opts[:controller] ||= name
+    
+        locales = @set.locales
+        localized(nil) do
+          locales.each do |l|
+            I18n.locale = l
+            nt = "#{l}_#{name}"
+            if nt != name and ((t = I18n.t(name, :scope => namespace, :default => name)) != name)
+              nt = "#{l}_#{name}"
+              opts[:as] = t
+              opts[:glang] = l
+              opts[:globalized] = true
+              send(type, nt.to_sym, opts, &block)
+              puts("[I18n] > localize %-10s: %40s (%s) => %s" % [namespace, nt, l, t]) if @set.i18n_verbose
+            end
           end
         end
 
-        opts = entities.extract_options!
-        if langs.size > 0
-          opts[:gnot_lang] = langs
-        end
-
-        send(type, *(entities << opts), &block)
-
-        opts.delete(:globalized)
-        opts.delete(:gnot_lang)
-
-        # Genere les routes traduites now
-        langs.each do |l|
-          I18n.locale = l
-          nt = "#{l}_#{name}"
-          opts[:as] = I18n.t(name, :scope => namespace, :default => name)
-          opts[:glang] = l
-          send(type, nt.to_sym, opts, &block)
-        end
-
+        Thread.current[:globalized] = true
+        send(type, *(entities << options), &block)
+        Thread.current[:globalized] = nil
       else
-        send(type, *entities, &block)        
+        send(type, *entities, &block)
       end
     end
 
@@ -208,9 +178,7 @@ module ActionController
           Thread.current[:globalized] = nil
           Thread.current[:globalized_s] = nil
         end
-        if resource.options[:gnot_lang]
-          opts[:gnot_lang] = resource.options[:gnot_lang]
-        elsif resource.options[:glang]
+        if resource.options[:glang]
           opts[:glang] = resource.options[:glang]
         end
 
