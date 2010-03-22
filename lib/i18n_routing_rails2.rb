@@ -120,6 +120,24 @@ end
 
 module ActionController
   module Resources
+    class Resource
+      alias_method :mkd_initialize, :initialize
+      def initialize(entities, options)
+        @real_path = options.delete(:real_path)
+        @real_path = @real_path.to_s.singularize if @real_path
+        
+        mkd_initialize(entities, options)
+      end
+
+      def nesting_name_prefix
+        @real_path ? "#{shallow_name_prefix}#{@real_path}_" : "#{shallow_name_prefix}#{singular}_"
+      end
+      
+      def nesting_path_prefix
+        @nesting_path_prefix ||= (@real_path ? "#{shallow_path_prefix}/#{path_segment}/:#{@real_path}_id" : "#{shallow_path_prefix}/#{path_segment}/:#{singular}_id")
+      end
+    end
+    
     def create_globalized_resources(type, namespace, *entities, &block)
       if @set.locales
         name = entities.dup.shift.to_s
@@ -130,7 +148,7 @@ module ActionController
         opts[:controller] ||= name
     
         locales = @set.locales
-        localized(nil) do
+        #localized(nil) do
           locales.each do |l|
             I18n.locale = l
             nt = "#{l}_#{name}"
@@ -139,11 +157,12 @@ module ActionController
               opts[:as] = t
               opts[:glang] = l
               opts[:globalized] = true
+              opts[:real_path] = opts[:singular] || name 
               send(type, nt.to_sym, opts, &block)
               puts("[I18n] > localize %-10s: %40s (%s) => %s" % [namespace, nt, l, t]) if @set.i18n_verbose
             end
           end
-        end
+        #end
 
         Thread.current[:globalized] = true
         send(type, *(entities << options), &block)
