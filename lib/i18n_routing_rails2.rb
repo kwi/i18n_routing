@@ -148,7 +148,7 @@ module ActionController
         opts[:controller] ||= name
     
         locales = @set.locales
-        #localized(nil) do
+        localized(nil) do
           locales.each do |l|
             I18n.locale = l
             nt = "#{l}_#{name}"
@@ -162,7 +162,7 @@ module ActionController
               puts("[I18n] > localize %-10s: %40s (%s) => %s" % [namespace, nt, l, t]) if @set.i18n_verbose
             end
           end
-        #end
+        end
 
         Thread.current[:globalized] = true
         send(type, *(entities << options), &block)
