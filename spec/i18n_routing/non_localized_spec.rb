@@ -26,12 +26,8 @@ describe I18nRouting do
     end
 
     class UrlTester
-      #def controller
-      #  ActionController::Base.new
-      #end
+      include ActionController::UrlWriter
     end
-
-    #ActionController::Routing::Routes.install_helpers(UrlTester)
 
     @routes = UrlTester.new
   end
