@@ -1,0 +1,7 @@
+en:
+  resources:
+    users: members
+  resource:
+    contact: 'contact-us'
+  named_routes_path:
+    about: 'about-our-company'

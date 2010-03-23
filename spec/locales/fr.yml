@@ -1,0 +1,13 @@
+fr:
+  resources:
+    users: utilisateurs
+    authors: 'auteurs'
+    books: 'livres'
+    galaxies: 'galaxies-en-francais'
+    planets: 'planetes'
+    universes: 'univers'
+  resource:
+    contact: 'contactez-nous'
+  named_routes_path:
+    about: 'a-propos'
+    

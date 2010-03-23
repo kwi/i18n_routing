@@ -1,0 +1,3 @@
+0.1.0 (Mar 22, 2010)
+
+* Initial release
