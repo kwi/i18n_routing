@@ -5,12 +5,14 @@ I18n_routing is a plugin for Ruby on Rails that lets you easily translate your r
 
 All necessary informations are available on the wiki : http://wiki.github.com/kwi/i18n_routing/
 
+Warning: The plugin is not currently running well with deep nesting resources. This will be fixed soon
+
 TODO
 ====
 
   * Clean up and refactor Rails 2 version
-  * Testing
-  * Bug fix ?
+  * Make nested resources works
+  * Another bug fix ?
 
 
 Copyright (c) 2010 Guillaume Luccisano - g-mai|: guillaume.luccisano, released under the MIT license
