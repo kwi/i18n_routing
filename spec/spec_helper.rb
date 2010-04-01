@@ -1,13 +1,9 @@
 require 'rubygems'
 require 'spec'
 
-$rails_version = nil
+$rails_version = ARGV.find { |e| e =~ /rails_spec_version=.*/ }.split('=').last.to_i rescue nil
 
-ARGV.each do |e|
-  if e =~ /rails_spec_version=.*/
-    $rails_version = e.split('=').last.to_i
-  end
-end
+puts "Rails version : #{$rails_version}"
 
 require 'rails' if !$rails_version
 
@@ -33,9 +29,6 @@ puts "Launching spec for Rails #{Rails.version}"
 
 # Add I18n load_path
 I18n.load_path = (I18n.load_path << Dir[File.join(File.dirname(__FILE__), 'locales', '*.yml')]).uniq
-
-module I18nRouting
-end
 
 require File.dirname(__FILE__) + '/../init.rb'
 
