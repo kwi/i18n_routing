@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe I18nRouting do
+describe :non_localized_routes do
   before(:each) do
 
     ActionController::Routing::Routes.clear!
@@ -35,7 +35,7 @@ describe I18nRouting do
   def routes
     @routes
   end
-  
+
   it "should still work for non localized named_route" do
     routes.send(:about_path).should == "/about"
   end

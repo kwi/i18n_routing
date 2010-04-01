@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe I18nRouting do
+describe :localized_routes do
   before(:each) do
     
     ActionController::Routing::Routes.clear!
@@ -60,6 +60,10 @@ describe I18nRouting do
   def routes
     @routes
   end
+  
+  def url_for(opts)
+    ActionController::Routing::Routes.generate_extras(opts).first
+  end
 
   it "should works for localized named_route" do
     I18n.locale = :fr
@@ -90,12 +94,12 @@ describe I18nRouting do
   
   it "should works with url_for" do
     I18n.locale = :fr
-    routes.send(:url_for, :controller => :users, :only_path => true).should == "/#{I18n.t :users, :scope => :resources}"
-    routes.send(:url_for, :controller => :about, :action => :show, :only_path => true).should == "/#{I18n.t :about, :scope => :named_routes_path}"
+    url_for(:controller => :users).should == "/#{I18n.t :users, :scope => :resources}"
+    url_for(:controller => :about, :action => :show).should == "/#{I18n.t :about, :scope => :named_routes_path}"
     I18n.locale = :en
-    routes.send(:url_for, :controller => :users, :only_path => true).should == "/#{I18n.t :users, :scope => :resources}"
+    url_for(:controller => :users).should == "/#{I18n.t :users, :scope => :resources}"
     I18n.locale = :de # Not localized
-    routes.send(:url_for, :controller => :users, :only_path => true).should == "/users"
+    url_for(:controller => :users).should == "/users"
   end
   
   # it "should have correct controller requirements" do
@@ -121,7 +125,7 @@ describe I18nRouting do
     routes.send(:universe_galaxies_path, 1).should == "/universes/1/galaxies"
     routes.send(:universe_galaxy_planets_path, 1, 1).should == "/universes/1/galaxy/1/planets"
   end
-  
+
   it "should nested resources have correct significant_keys" do
     r = ActionController::Routing::Routes.named_routes.instance_eval { @routes }
     #puts r.keys.to_yaml
