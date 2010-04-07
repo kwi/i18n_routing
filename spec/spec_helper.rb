@@ -3,7 +3,7 @@ require 'spec'
 
 $rails_version = ARGV.find { |e| e =~ /rails_spec_version=.*/ }.split('=').last.to_i rescue nil
 
-puts "Rails version : #{$rails_version}"
+#puts "Rails version : #{$rails_version}"
 
 require 'rails' if !$rails_version
 

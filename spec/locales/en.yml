@@ -1,6 +1,10 @@
 en:
   resources:
     users: members
+    authors: 'authors-en'
+    galaxies: 'galaxies-en'
+    planets: 'planets-en'
+    universes: 'universes-en'
   resource:
     contact: 'contact-us'
   named_routes_path:

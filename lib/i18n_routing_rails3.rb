@@ -30,7 +30,10 @@ module I18nRouting
 
             # Create the localized resource(s)
             scope(:constraints => opts[:constraints]) do
-              send(type, *res, &block)
+              #puts @scope.to_yaml
+              localized(nil) do
+                send(type, *res, &block)
+              end
             end
 
             localizable_route = resource
