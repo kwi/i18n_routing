@@ -38,7 +38,7 @@ describe :localized_routes do
         resources :not_users
         resource  :not_contact
 
-        localized do
+        localized(I18n.available_locales, :verbose => true) do
           match 'about' => "about#show", :as => :about
 
           resources :users

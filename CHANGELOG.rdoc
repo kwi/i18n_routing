@@ -1,3 +1,7 @@
+0.2.0 (Apr 07, 2010)
+
+* All specs pass for Rails2, including nested deep resources
+
 0.1.0 (Mar 22, 2010)
 
 * Initial release

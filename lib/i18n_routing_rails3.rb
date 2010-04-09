@@ -6,6 +6,7 @@ module I18nRouting
     # Localize a resources or a resource
     def localized_resources(type = :resources, *resources, &block)
       localizable_route = nil
+
       if @locales
         res = resources.clone
 
@@ -16,10 +17,10 @@ module I18nRouting
         # Check for translated resource
         @locales.each do |locale|
           I18n.locale = locale
-          localized_path = I18n.t(resource.name, :scope => type, :default => resource.name)
+          localized_path = I18n.t(resource.name, :scope => type, :default => resource.name.to_s)
 
           # A translated route exists :
-          if localized_path and localized_path != resource.name
+          if localized_path and localized_path != resource.name.to_s
             puts("[I18n] > localize %-10s: %40s (%s) => %s" % [type, resource.name, locale, localized_path]) if @i18n_verbose
             opts = options.dup
             opts[:as] = localized_path.to_sym
@@ -30,8 +31,7 @@ module I18nRouting
 
             # Create the localized resource(s)
             scope(:constraints => opts[:constraints]) do
-              #puts @scope.to_yaml
-              localized(nil) do
+              localized([locale]) do
                 send(type, *res, &block)
               end
             end
