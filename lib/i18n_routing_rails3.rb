@@ -1,4 +1,7 @@
 # encoding: utf8
+require 'rack/mount'
+require 'action_dispatch'
+
 module I18nRouting
   module Mapper
 
@@ -23,7 +26,7 @@ module I18nRouting
           if localized_path and localized_path != resource.name.to_s
             puts("[I18n] > localize %-10s: %40s (%s) => %s" % [type, resource.name, locale, localized_path]) if @i18n_verbose
             opts = options.dup
-            opts[:as] = localized_path.to_sym
+            opts[:path] = localized_path.to_sym
             opts[:controller] ||= r
             opts[:constraints] = opts[:constraints] ? opts[:constraints].dup : {}
             opts[:constraints][:i18n_locale] = locale.to_s
@@ -31,7 +34,7 @@ module I18nRouting
 
             # Create the localized resource(s)
             scope(:constraints => opts[:constraints]) do
-              localized([locale]) do
+              localized(nil) do
                 send(type, *res, &block)
               end
             end
