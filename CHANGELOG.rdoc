@@ -1,4 +1,4 @@
-0.2.2 (Apr 09, 2010)
+0.2.2 (Apr 21, 2010)
 
 * Add I18n gem dependency
 
