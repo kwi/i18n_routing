@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "i18n_routing"
-  s.version = "0.2.2"
+  s.version = "0.2.3"
   s.author = "Guillaume Luccisano"
   s.email = "guillaume.luccisano@gmail.com"
   s.homepage = "http://github.com/kwi/i18n_routing"

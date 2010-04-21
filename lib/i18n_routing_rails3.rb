@@ -1,4 +1,4 @@
-# encoding: utf8
+# encoding: utf-8
 require 'rack/mount'
 require 'action_dispatch'
 

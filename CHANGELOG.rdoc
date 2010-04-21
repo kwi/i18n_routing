@@ -1,3 +1,7 @@
+0.2.3 (Apr 21, 2010)
+
+* Works on ruby 1.9.2-head
+
 0.2.2 (Apr 21, 2010)
 
 * Add I18n gem dependency

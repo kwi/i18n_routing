@@ -1,4 +1,4 @@
-# encoding: utf8
+# encoding: utf-8
 
 #
 # WARNING : Old and dirty Rails 2.x code
