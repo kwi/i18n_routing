@@ -5,7 +5,7 @@ require 'action_dispatch'
 module I18nRouting
   module Mapper
 
-  private
+    private
     # Localize a resources or a resource
     def localized_resources(type = :resources, *resources, &block)
       localizable_route = nil
@@ -45,7 +45,7 @@ module I18nRouting
       end
       return localizable_route
     end
-    
+
     # Set if the next route creation will be a localied route or not
     # If yes, localizable is a name, or a Mapper::Resource
     # Can take a block, if so, save the current context, set the new
@@ -62,8 +62,8 @@ module I18nRouting
       end
     end
 
-  public
-  
+    public
+
     # On Routing::Mapper initialization (when doing Application.routes.draw do ...)
     # prepare routing system to be i18n ready
     def initialize(*args)
@@ -87,7 +87,7 @@ module I18nRouting
         @set.named_routes.extend I18nRouting::NamedRouteCollection
       end
     end
-  
+
     # Rails 3 routing system
     # Create a block for localized routes, in your routes.rb :
     #
@@ -121,10 +121,10 @@ module I18nRouting
           super
         end
       end
-      
+
       super
     end
-    
+
     def resource(*resources, &block)
       set_localizable_route(nil) do
         set_localizable_route(localized_resources(:resource, *resources, &block))
@@ -143,12 +143,12 @@ module I18nRouting
 
   # Used for localize simple named routes
   class LocalizedMapping < ActionDispatch::Routing::Mapper::Mapping
-    
+
     attr_reader :path
-    
+
     def initialize(locale, set, scope, args)
       super(set, scope, args.clone)
-      
+
       # try to get translated path :
       I18n.locale = locale
       ts = @path.gsub(/^\//, '')
@@ -167,12 +167,12 @@ module I18nRouting
       end
 
     end
-    
+
     # Return true if this route is localizable
     def localizable?
       @localized_path != nil
     end
-    
+
   end
 
   module NamedRouteCollection
@@ -190,12 +190,12 @@ module I18nRouting
         selector = url_helper_name(name, kind)
 
         rlang = if n.kind_of?(ActionDispatch::Routing::Mapper::Resources::Resource) and i = name.to_s.rindex("_#{n.plural}")
-          "#{selector.to_s[0, i]}_glang_#{n.plural}#{selector.to_s[i + "_#{n.plural}".size, selector.to_s.size]}"
-        elsif n.kind_of?(ActionDispatch::Routing::Mapper::Resources::Resource) and i = name.to_s.rindex("_#{n.singular}")
-          "#{selector.to_s[0, i]}_glang_#{n.singular}#{selector.to_s[i + "_#{n.singular}".size, selector.to_s.size]}"
-        else
-          "glang_#{selector}"
-        end
+                  "#{selector.to_s[0, i]}_glang_#{n.plural}#{selector.to_s[i + "_#{n.plural}".size, selector.to_s.size]}"
+                elsif n.kind_of?(ActionDispatch::Routing::Mapper::Resources::Resource) and i = name.to_s.rindex("_#{n.singular}")
+                  "#{selector.to_s[0, i]}_glang_#{n.singular}#{selector.to_s[i + "_#{n.singular}".size, selector.to_s.size]}"
+                else
+                  "glang_#{selector}"
+                end
 
         @module.module_eval <<-end_eval # We use module_eval to avoid leaks
           alias_method :localized_#{selector}, :#{selector}
@@ -210,6 +210,7 @@ module I18nRouting
               localized_#{selector}(*args)
             end
           end
+
         end_eval
 
       end
@@ -219,7 +220,7 @@ module I18nRouting
   # Rack::Mount::Route module
   # Exists in order to use apropriate localized route when using url_for
   module RackMountRoute
-    
+
     # During route initialization, if a condition i18n_locale is present
     # Delete it, and store it in @locale
     def initialize(app, conditions, defaults, name)

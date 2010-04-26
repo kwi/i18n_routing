@@ -9,7 +9,7 @@ desc "Run specs for current Rails version"
 Spec::Rake::SpecTask.new do |t|
   t.spec_files = spec_files
   t.spec_opts = lambda {
-    @rails_spec_version ? ["-c -- rails_spec_version=#{@rails_spec_version}"] : ["-c"]
+    @rails_spec_version ? ["-c --format specdoc -- rails_spec_version=#{@rails_spec_version}"] : ["-c --format specdoc"]
   }
 end
 

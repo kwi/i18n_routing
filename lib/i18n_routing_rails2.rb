@@ -8,7 +8,7 @@
 module ActionController
   module Routing
     class Route #:nodoc:
-      
+
       alias_method :mkd_initialize, :initialize
       def initialize(segments = [], requirements = {}, conditions = {})
         @glang = requirements.delete(:glang)
@@ -23,7 +23,7 @@ module ActionController
           if @glang and !r.blank?
             r << " and I18n.locale == :#{@glang}"
           end
-          
+
           return r
         end
     end
@@ -33,10 +33,10 @@ end
 module ActionController
   module Routing
     class RouteSet #:nodoc:
-      
+
       attr :locales, true
       attr :i18n_verbose, true
-      
+
       class Mapper
         def localized(locales = I18n.available_locales, opts = {})
           old_value = @set.locales
@@ -46,9 +46,9 @@ module ActionController
         ensure
           @set.locales = old_value
         end
-        
+
       end
-       
+
       class NamedRouteCollection #:nodoc:
 
         alias_method :mkd_define_url_helper, :define_url_helper
@@ -95,7 +95,7 @@ module ActionController
         if @locales and !path.blank? and !Thread.current[:i18n_no_named_localization]
           #puts "ADD NAMED ROUTE : #{path}"
           name = name.to_s
-        
+
           @locales.each do |l|
             I18n.locale = l
             nt = "#{l}_#{name}"
@@ -104,7 +104,7 @@ module ActionController
               puts("[I18n] > localize %-10s: %40s (%s) => %s" % ['route', name, l, t]) if @i18n_verbose
             end
           end
-          
+
           old_v = Thread.current[:globalized]
           Thread.current[:globalized] = true
           gl_add_named_route(name, path, options)
@@ -126,33 +126,33 @@ module ActionController
       def initialize(entities, options)
         @real_path = options.delete(:real_path)
         @real_path = @real_path.to_s.singularize if @real_path
-        
+
         mkd_initialize(entities, options)
       end
 
       def nesting_name_prefix
         @real_path ? "#{shallow_name_prefix}#{@real_path}_" : "#{shallow_name_prefix}#{singular}_"
       end
-      
+
       def nesting_path_prefix
         @nesting_path_prefix ||= (@real_path ? "#{shallow_path_prefix}/#{path_segment}/:#{@real_path}_id" : "#{shallow_path_prefix}/#{path_segment}/:#{singular}_id")
       end
     end
-    
+
     def switch_globalized_state(state)
       old_g = Thread.current[:globalized]
       Thread.current[:globalized] = state
       yield
       Thread.current[:globalized] = old_g
     end
-    
+
     def switch_no_named_localization(state)
       old_g = Thread.current[:i18n_no_named_localization]
       Thread.current[:i18n_no_named_localization] = state
       yield
       Thread.current[:i18n_no_named_localization] = old_g
     end
-    
+
     def create_globalized_resources(type, namespace, *entities, &block)
 
       Thread.current[:i18n_nested_deep] ||= 0
@@ -160,12 +160,12 @@ module ActionController
 
       if @set.locales
         name = entities.dup.shift.to_s
-  
+
         options = entities.extract_options!
         opts = options.dup
-  
+
         opts[:controller] ||= name
-    
+
         locales = @set.locales
         translated = nil
         localized(nil) do
@@ -176,7 +176,7 @@ module ActionController
               nt = "#{l}_#{name}"
               opts[:as] = t
               opts[:glang] = l
-              opts[:real_path] = opts[:singular] || name 
+              opts[:real_path] = opts[:singular] || name
               localized([l]) do
                 translated = true
                 switch_no_named_localization(true) do
@@ -199,7 +199,7 @@ module ActionController
       else
         send(type, *entities, &block)
       end
-      
+
       Thread.current[:i18n_nested_deep] -= 1
     end
 
@@ -214,25 +214,25 @@ module ActionController
     end
 
     private
-      alias_method :gl_action_options_for, :action_options_for
-      def action_options_for(action, resource, method = nil, resource_options = {})
-        opts = gl_action_options_for(action, resource, method, resource_options)
+    alias_method :gl_action_options_for, :action_options_for
+    def action_options_for(action, resource, method = nil, resource_options = {})
+      opts = gl_action_options_for(action, resource, method, resource_options)
 
-        if Thread.current[:globalized]
-          Thread.current[:globalized] = resource.plural
-          if resource.uncountable?
-            Thread.current[:globalized] = resource.plural.to_s + '_index'
-          end
-          Thread.current[:globalized_s] = resource.singular
-        else
-          Thread.current[:globalized] = nil
-          Thread.current[:globalized_s] = nil
+      if Thread.current[:globalized]
+        Thread.current[:globalized] = resource.plural
+        if resource.uncountable?
+          Thread.current[:globalized] = resource.plural.to_s + '_index'
         end
-        if resource.options[:glang]
-          opts[:glang] = resource.options[:glang]
-        end
-
-        opts
+        Thread.current[:globalized_s] = resource.singular
+      else
+        Thread.current[:globalized] = nil
+        Thread.current[:globalized_s] = nil
       end
+      if resource.options[:glang]
+        opts[:glang] = resource.options[:glang]
+      end
+
+      opts
+    end
   end
 end

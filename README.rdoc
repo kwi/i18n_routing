@@ -8,8 +8,13 @@ Warning: The plugin is not currently running well with deep nesting resources fo
 
 == TODO
 
+* Fix Rails3 routing, currently broken
 * Do nested resources for Rails3  
 * Another bug fix ?
 
+== Contributors
+
+* kwi (Guillaume Luccisano)
+* bigtiger (Jim Remsik)
 
 Copyright (c) 2010 Guillaume Luccisano - g-mai|: guillaume.luccisano, released under the MIT license
