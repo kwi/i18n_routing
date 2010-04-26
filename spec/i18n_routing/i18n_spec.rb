@@ -155,7 +155,6 @@ describe :localized_routes do
 
   it "should nested resources have correct significant_keys" do
     r = ActionController::Routing::Routes.named_routes.instance_eval { @routes }
-    #puts r.keys.to_yaml
 
     r[:author_fr_books].should_not be_nil
 
@@ -170,7 +169,6 @@ describe :localized_routes do
 
   it "should deep nested resources have correct significant_keys" do
     r = ActionController::Routing::Routes.named_routes.instance_eval { @routes }
-    #puts r.keys.to_yaml
 
     r[:universe_galaxy_fr_planet].should_not be_nil
 
@@ -192,11 +190,5 @@ describe :localized_routes do
 
     r.keys.should_not include(:fr_author_books) # Whant fr_author_books
   end
-
-  # it "zZ Just print routes :)" do
-  #   r = ActionController::Routing::Routes.named_routes.instance_eval { @routes }
-  #   puts r.keys.collect(&:to_s).sort.to_yaml
-  #   puts "Nb Routes : #{r.keys.size}"
-  # end
 
 end
