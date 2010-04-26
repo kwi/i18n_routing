@@ -26,6 +26,7 @@ if Rails.version < '3'
 else
   gem 'actionpack', '> 2.9'
   require 'action_controller'
+  require 'action_dispatch'
   require 'rack/mount'
 end
 
