@@ -5,8 +5,8 @@ $rails_version = ARGV.find { |e| e =~ /rails_spec_version=.*/ }.split('=').last.
 
 if !$rails_version
   begin
-    require 'rails' 
-  rescue Exception 
+    require 'rails'
+  rescue Exception
     $rails_version = 2
   end
 end
