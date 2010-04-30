@@ -30,6 +30,10 @@ else
   require 'rack/mount'
 end
 
+def rails3?
+  !(Rails.version < '3')
+end
+
 puts "Launching spec for Rails #{Rails.version}"
 
 # Add I18n load_path

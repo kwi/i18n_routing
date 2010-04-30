@@ -8,7 +8,6 @@ Warning: The plugin is not currently running well with deep nesting resources fo
 
 == TODO
 
-* Fix Rails3 routing, currently broken
 * Do nested resources for Rails3  
 * Another bug fix ?
 

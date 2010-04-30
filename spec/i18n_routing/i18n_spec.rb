@@ -3,10 +3,8 @@ require 'spec_helper'
 describe :localized_routes do
   before(:all) do
 
-    ActionController::Routing::Routes.clear!
-
-    if Rails.version < '3'
-
+    if !rails3?
+      ActionController::Routing::Routes.clear!
       ActionController::Routing::Routes.draw do |map|
         map.not_about 'not_about', :controller => 'not_about'
         map.resources :not_users
@@ -29,10 +27,16 @@ describe :localized_routes do
           end
         end
       end
+      
+      @r = ActionController::Routing::Routes
+      
+      class UrlTester
+        include ActionController::UrlWriter
+      end
 
     else
-
-      ActionController::Routing::Routes.draw do
+      @r = ActionDispatch::Routing::RouteSet.new
+      @r.draw do
         match 'not_about' => "not_about#show", :as => :not_about
         resources :not_users
         resource  :not_contact
@@ -55,20 +59,19 @@ describe :localized_routes do
 
         end
       end
+           
+      class UrlTester; end
+      UrlTester.send :include, @r.url_helpers
 
-    end
-
-    class UrlTester
-      include ActionController::UrlWriter
     end
 
   end
 
-  let(:nested_routes) { ActionController::Routing::Routes.named_routes.instance_eval { routes } }
+  let(:nested_routes) { @r.named_routes.instance_eval { routes } }
   let(:routes) { UrlTester.new }
 
   def url_for(opts)
-    ActionController::Routing::Routes.generate_extras(opts).first
+    @r.generate_extras(opts).first
   end
 
   context "do not break existing behavior" do
@@ -160,17 +163,11 @@ describe :localized_routes do
         nested_routes[:author_fr_books].should_not be_nil
       end
 
-      context "in Rails < 3" do
+      context "in Rails #{Rails.version}" do
         it "include the correct significant keys" do
-          nested_routes[:author_books].significant_keys.should include(:author_id)
-          nested_routes[:author_fr_books].significant_keys.should include(:author_id)
-        end
-      end
-
-      context "in Rails 3" do
-        it "include the correct segment keys" do
-          nested_routes[:author_books].segment_keys.should include(:author_id)
-          nested_routes[:author_fr_books].segment_keys.should include(:author_id)
+          v = !rails3? ? :significant_keys : :segment_keys
+          nested_routes[:author_books].send(v).should include(:author_id)
+          nested_routes[:author_fr_books].send(v).should include(:author_id)
         end
       end
 
@@ -182,24 +179,15 @@ describe :localized_routes do
         nested_routes[:universe_galaxy_fr_planet].should_not be_nil
       end
 
-      context "in Rails < 3" do
+      context "in Rails #{Rails.version}" do
         it "include the correct significant keys" do
-          nested_routes[:universe_galaxy_planet].significant_keys.should include(:universe_id)
-          nested_routes[:universe_galaxy_fr_planet].significant_keys.should include(:universe_id)
-          nested_routes[:universe_galaxy_planet].significant_keys.should include(:galaxy_id)
-          nested_routes[:universe_galaxy_fr_planet].significant_keys.should include(:galaxy_id)
+          v = !rails3? ? :significant_keys : :segment_keys
+          nested_routes[:universe_galaxy_planet].send(v).should include(:universe_id)
+          nested_routes[:universe_galaxy_fr_planet].send(v).should include(:universe_id)
+          nested_routes[:universe_galaxy_planet].send(v).should include(:galaxy_id)
+          nested_routes[:universe_galaxy_fr_planet].send(v).should include(:galaxy_id)
         end
       end
-
-      context "in Rails 3" do
-        it "include the correct segment keys" do
-          nested_routes[:universe_galaxy_planet].segment_keys.should include(:universe_id)
-          nested_routes[:universe_galaxy_fr_planet].segment_keys.should include(:universe_id)
-          nested_routes[:universe_galaxy_planet].segment_keys.should include(:galaxy_id)
-          nested_routes[:universe_galaxy_fr_planet].segment_keys.should include(:galaxy_id)
-        end
-      end
-
     end
 
     it "nested resources do not deep translate with multi helpers" do

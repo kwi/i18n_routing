@@ -1,3 +1,7 @@
+0.2.4 (Apr 21, 2010)
+
+* Fix latest Rails3 edge compatibility (previous rails3 beta version not supported any more)
+
 0.2.3 (Apr 21, 2010)
 
 * Works on ruby 1.9.2-head

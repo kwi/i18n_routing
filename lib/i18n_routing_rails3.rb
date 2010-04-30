@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'rack/mount'
 require 'action_dispatch'
+require 'active_support/core_ext/module'
 
 module I18nRouting
   module Mapper
@@ -15,7 +16,7 @@ module I18nRouting
 
         options = res.extract_options!
         r = res.first
-        resource = type == :resource ? ActionDispatch::Routing::Mapper::SingletonResource.new(r, options) : ActionDispatch::Routing::Mapper::Resource.new(r, options)
+        resource = type == :resource ? ActionDispatch::Routing::Mapper::SingletonResource.new(r, options.dup) : ActionDispatch::Routing::Mapper::Resource.new(r, options.dup)
 
         # Check for translated resource
         @locales.each do |locale|
@@ -24,7 +25,7 @@ module I18nRouting
 
           # A translated route exists :
           if localized_path and localized_path != resource.name.to_s
-            puts("[I18n] > localize %-10s: %40s (%s) => %s" % [type, resource.name, locale, localized_path]) if @i18n_verbose
+            puts("[I18n] > localize %-10s: %40s (%s) => /%s" % [type, resource.name, locale, localized_path]) if @i18n_verbose
             opts = options.dup
             opts[:path] = localized_path.to_sym
             opts[:controller] ||= r
@@ -220,20 +221,26 @@ module I18nRouting
   # Rack::Mount::Route module
   # Exists in order to use apropriate localized route when using url_for
   module RackMountRoute
+    
+    # Alias method in order to handle i18n routes
+    def self.included(mod)
+      mod.send :alias_method_chain, :generate, :i18n_routing
+      mod.send :alias_method_chain, :initialize, :i18n_routing
+    end
 
     # During route initialization, if a condition i18n_locale is present
     # Delete it, and store it in @locale
-    def initialize(app, conditions, defaults, name)
+    def initialize_with_i18n_routing(app, conditions, defaults, name)
       @locale = conditions[:i18n_locale] ? conditions.delete(:i18n_locale).source.to_sym : nil
-      super
+      initialize_without_i18n_routing(app, conditions, defaults, name)
     end
 
     # Called for dynamic route generation
     # If a @locale is present and if this locale is not the current one
     #  => return nil and refuse to generate the route
-    def generate(method, params = {}, recall = {}, options = {})
+    def generate_with_i18n_routing(method, params = {}, recall = {}, options = {})
       return nil if @locale and @locale != I18n.locale
-      super
+      generate_without_i18n_routing(method, params, recall, options)
     end
 
   end
