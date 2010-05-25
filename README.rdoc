@@ -6,11 +6,6 @@ All necessary informations are available on the wiki : http://wiki.github.com/kw
 
 Warning: The plugin is not currently running well with deep nesting resources for Rails3. This will be fixed soon
 
-== TODO
-
-* Do nested resources for Rails3  
-* Another bug fix ?
-
 == Contributors
 
 * kwi (Guillaume Luccisano)

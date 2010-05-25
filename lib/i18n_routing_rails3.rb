@@ -21,21 +21,22 @@ module I18nRouting
         # Check for translated resource
         @locales.each do |locale|
           I18n.locale = locale
-          localized_path = I18n.t(resource.name, :scope => type, :default => resource.name.to_s)
+          localized_path = I18nRouting.translation_for(resource.name, type)
 
           # A translated route exists :
           if localized_path and localized_path != resource.name.to_s
             puts("[I18n] > localize %-10s: %40s (%s) => /%s" % [type, resource.name, locale, localized_path]) if @i18n_verbose
             opts = options.dup
             opts[:path] = localized_path.to_sym
+            opts.delete(:path_names)
             opts[:controller] ||= r
             opts[:constraints] = opts[:constraints] ? opts[:constraints].dup : {}
             opts[:constraints][:i18n_locale] = locale.to_s
             res = ["#{locale}_#{r}".to_sym, opts]
 
             # Create the localized resource(s)
-            scope(:constraints => opts[:constraints]) do
-              localized(nil) do
+            scope(:constraints => opts[:constraints], :path_names => I18nRouting.path_names(resource.name, @scope)) do
+              localized([locale]) do
                 send(type, *res, &block)
               end
             end
@@ -125,7 +126,7 @@ module I18nRouting
 
       super
     end
-
+    
     def resource(*resources, &block)
       set_localizable_route(nil) do
         set_localizable_route(localized_resources(:resource, *resources, &block))
@@ -153,7 +154,7 @@ module I18nRouting
       # try to get translated path :
       I18n.locale = locale
       ts = @path.gsub(/^\//, '')
-      @localized_path = '/' + I18n.t(ts, :scope => :named_routes_path, :default => ts)
+      @localized_path = '/' + I18nRouting.translation_for(ts, :named_routes_path)
 
       # If a translated path exists, set localized infos
       if @localized_path and @localized_path != @path

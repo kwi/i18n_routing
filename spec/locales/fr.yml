@@ -1,4 +1,12 @@
 fr:
+  routes:
+    users:
+      as: utilisateurs
+      path_names:
+        level: 'niveau'
+        groups: 'groupe'
+        new: 'nouvel_utilisateur'
+        edit: 'edition_utilisateur'
   resources:
     users: utilisateurs
     authors: 'auteurs'
@@ -10,4 +18,6 @@ fr:
     contact: 'contactez-nous'
   named_routes_path:
     about: 'a-propos'
-    
+  path_names:
+    new: 'nouveau'
+    edit: 'edition'  

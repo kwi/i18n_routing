@@ -93,13 +93,13 @@ module ActionController
       alias_method :gl_add_named_route, :add_named_route
       def add_named_route(name, path, options = {}) #:nodoc:
         if @locales and !path.blank? and !Thread.current[:i18n_no_named_localization]
-          #puts "ADD NAMED ROUTE : #{path}"
+          # Here, try to translate standard named routes
           name = name.to_s
 
           @locales.each do |l|
             I18n.locale = l
             nt = "#{l}_#{name}"
-            if nt != name and ((t = I18n.t(path.to_s, :scope => :named_routes_path, :default => path.to_s)) != path)
+            if nt != name and ((t = I18nRouting.translation_for(path, :named_routes_path)) != path)
               gl_add_named_route(nt, t, options.merge(:glang => l))
               puts("[I18n] > localize %-10s: %40s (%s) => %s" % ['route', name, l, t]) if @i18n_verbose
             end
@@ -167,18 +167,18 @@ module ActionController
         opts[:controller] ||= name
 
         locales = @set.locales
-        translated = nil
         localized(nil) do
           locales.each do |l|
             I18n.locale = l
             nt = "#{l}_#{name}"
-            if nt != name and ((t = I18n.t(name, :scope => namespace, :default => name)) != name)
+            if nt != name and ((t = I18nRouting.translation_for(name, namespace)) != name)
               nt = "#{l}_#{name}"
               opts[:as] = t
               opts[:glang] = l
               opts[:real_path] = opts[:singular] || name
+              opts[:path_names] = I18nRouting.path_names(name, options)
+
               localized([l]) do
-                translated = true
                 switch_no_named_localization(true) do
                   send(type, nt.to_sym, opts, &block)
                 end

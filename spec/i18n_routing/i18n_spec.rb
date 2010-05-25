@@ -1,77 +1,88 @@
 require 'spec_helper'
 
 describe :localized_routes do
+
+  @@r = nil # Global routes in order to speed up testing
+  
   before(:all) do
 
-    if !rails3?
-      ActionController::Routing::Routes.clear!
-      ActionController::Routing::Routes.draw do |map|
-        map.not_about 'not_about', :controller => 'not_about'
-        map.resources :not_users
-        map.resource  :not_contact
+    if !@@r
+      if !rails3?
+        ActionController::Routing::Routes.clear!
+        ActionController::Routing::Routes.draw do |map|
+          map.not_about 'not_about', :controller => 'not_about'
+          map.resources :not_users
+          map.resource  :not_contact
 
-        map.localized do
-          map.about 'about', :controller => 'about', :action => :show
+          map.localized do
+            map.about 'about', :controller => 'about', :action => :show
 
-          map.resources :users
-          map.resource  :contact
+            map.resources :users, :member => {:level => :get}, :collection => {:groups => :get}
+            map.resource  :contact
 
-          map.resources :authors do |m|
-            m.resources :books
-          end
+            map.resources :authors do |m|
+              m.resources :books
+            end
 
-          map.resources :universes do |m|
-            m.resources :galaxies do |mm|
-              mm.resources :planets
+            map.resources :universes do |m|
+              m.resources :galaxies do |mm|
+                mm.resources :planets
+              end
             end
           end
         end
-      end
       
-      @r = ActionController::Routing::Routes
+        @@r = ActionController::Routing::Routes
       
-      class UrlTester
-        include ActionController::UrlWriter
-      end
-
-    else
-      @r = ActionDispatch::Routing::RouteSet.new
-      @r.draw do
-        match 'not_about' => "not_about#show", :as => :not_about
-        resources :not_users
-        resource  :not_contact
-
-        localized(I18n.available_locales, :verbose => true) do
-          match 'about' => "about#show", :as => :about
-
-          resources :users
-          resource  :contact
-
-          resources :authors do
-            resources :books
-          end
-
-          resources :universes do
-            resources :galaxies do
-              resources :planets
-            end
-          end
-
+        class UrlTester
+          include ActionController::UrlWriter
         end
-      end
+
+      else
+
+        @@r = ActionDispatch::Routing::RouteSet.new
+        @@r.draw do
+          match 'not_about' => "not_about#show", :as => :not_about
+          resources :not_users
+          resource  :not_contact
+
+          localized(I18n.available_locales, :verbose => true) do
+            match 'about' => "about#show", :as => :about
+
+            resources :users, :path_names => {:level => :level, :groups => :groups} do
+              member do
+                get :level
+              end
+              get :groups, :on => :collection
+            end
+            resource  :contact
+
+            resources :authors do
+              resources :books
+            end
+
+            resources :universes do
+              resources :galaxies do
+                resources :planets
+              end
+            end
+
+          end
+        end
            
-      class UrlTester; end
-      UrlTester.send :include, @r.url_helpers
+        class UrlTester; end
+        UrlTester.send :include, @@r.url_helpers
 
+      end
     end
 
   end
 
-  let(:nested_routes) { @r.named_routes.instance_eval { routes } }
+  let(:nested_routes) { @@r.named_routes.instance_eval { routes } }
   let(:routes) { UrlTester.new }
 
   def url_for(opts)
-    @r.generate_extras(opts).first
+    @@r.generate_extras(opts).first
   end
 
   context "do not break existing behavior" do
@@ -139,11 +150,11 @@ describe :localized_routes do
     end
 
     it "resources generates routes using localized values" do
-      routes.send(:users_path).should == "/#{I18n.t :users, :scope => :resources}"
+      routes.send(:users_path).should == "/#{I18n.t :as, :scope => :'routes.users'}"
     end
 
     it "url_for generates routes using localized values" do
-      url_for(:controller => :users).should == "/#{I18n.t :users, :scope => :resources}"
+      url_for(:controller => :users).should == "/#{I18n.t :as, :scope => :'routes.users'}"
       url_for(:controller => :about, :action => :show).should == "/#{I18n.t :about, :scope => :named_routes_path}"
     end
 
@@ -155,6 +166,38 @@ describe :localized_routes do
       routes.send(:universes_path).should == "/#{I18n.t :universes, :scope => :resources}"
       routes.send(:universe_galaxies_path, 1).should == "/#{I18n.t :universes, :scope => :resources}/1/#{I18n.t :galaxies, :scope => :resources}"
       routes.send(:universe_galaxy_planets_path, 1, 1).should == "/#{I18n.t :universes, :scope => :resources}/1/#{I18n.t :galaxies, :scope => :resources}/1/#{I18n.t :planets, :scope => :resources}"
+    end
+
+    context "with path_names" do
+      
+      it "default translated path names" do
+        routes.send(:new_universe_path).should == "/#{I18n.t :universes, :scope => :resources}/#{I18n.t :new, :scope => :path_names}"
+        routes.send(:edit_universe_path, 42).should == "/#{I18n.t :universes, :scope => :resources}/42/#{I18n.t :edit, :scope => :path_names}"
+      end
+      
+      it "custom translated path names" do
+        routes.send(:new_user_path).should == "/#{I18n.t :users, :scope => :resources}/#{I18n.t :new, :scope => :'routes.users.path_names'}"
+        routes.send(:edit_user_path, 42).should == "/#{I18n.t :users, :scope => :resources}/42/#{I18n.t :edit, :scope => :'routes.users.path_names'}"
+      end
+
+    end
+    
+    context "with member and collection" do
+
+      it "custom member" do
+        I18n.locale = :en
+        routes.send(:level_user_path, 42).should == "/#{I18n.t :users, :scope => :resources}/42/level"        
+        I18n.locale = :fr
+        routes.send(:level_user_path, 42).should == "/#{I18n.t :users, :scope => :resources}/42/#{I18n.t :level, :scope => :'routes.users.path_names'}"
+      end
+
+      it "custom collection" do
+        I18n.locale = :en
+        routes.send(:groups_users_path).should == "/#{I18n.t :users, :scope => :resources}/groups"        
+        I18n.locale = :fr
+        routes.send(:groups_users_path).should == "/#{I18n.t :users, :scope => :resources}/#{I18n.t :groups, :scope => :'routes.users.path_names'}"
+      end
+
     end
 
     context "when nested" do

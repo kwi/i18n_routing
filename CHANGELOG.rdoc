@@ -1,3 +1,9 @@
+0.3.0 (May 25, 2010)
+
+* Add support for translating path_names, member and collection
+* Fix Rails3 nested path
+* All specs are passing under Rails 2.3.5 and Rails 3
+
 0.2.4 (Apr 21, 2010)
 
 * Fix latest Rails3 edge compatibility (previous rails3 beta version not supported any more)
