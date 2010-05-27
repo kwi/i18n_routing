@@ -1,3 +1,7 @@
+0.3.1 (May 27, 2010)
+
+* Add a small Rails3 verification
+
 0.3.0 (May 27, 2010)
 
 * Add support for translating path_names, member and collection
