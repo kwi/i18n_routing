@@ -13,6 +13,7 @@ module I18nRouting
     else
       # Try to get the translation in routes namescope first      
       t = I18n.t(:as, :scope => "routes.#{name}".to_sym, :default => name.to_s)
+      
       return t if t and t != name.to_s
 
       I18n.t(name.to_s, :scope => type, :default => name.to_s)      
