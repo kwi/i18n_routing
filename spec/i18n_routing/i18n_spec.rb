@@ -14,7 +14,7 @@ describe :localized_routes do
           map.resources :not_users
           map.resource  :not_contact
 
-          map.localized do
+          map.localized(I18n.available_locales, :verbose => false) do
             map.about 'about', :controller => 'about', :action => :show
 
             map.resources :users, :member => {:level => :get}, :collection => {:groups => :get}
@@ -26,7 +26,9 @@ describe :localized_routes do
 
             map.resources :universes do |m|
               m.resources :galaxies do |mm|
-                mm.resources :planets
+                mm.resources :planets do |mmm|
+                  mmm.resources :countries
+                end
               end
             end
           end
@@ -46,10 +48,10 @@ describe :localized_routes do
           resources :not_users
           resource  :not_contact
 
-          localized(I18n.available_locales, :verbose => true) do
+          localized(I18n.available_locales, :verbose => false) do
             match 'about' => "about#show", :as => :about
 
-            resources :users, :path_names => {:level => :level, :groups => :groups} do
+            resources :users do
               member do
                 get :level
               end
@@ -60,10 +62,14 @@ describe :localized_routes do
             resources :authors do
               resources :books
             end
-
+            
             resources :universes do
               resources :galaxies do
-                resources :planets
+                resources :planets do
+                  scope do
+                    resources :countries
+                  end
+                end
               end
             end
 
@@ -166,6 +172,7 @@ describe :localized_routes do
       routes.send(:universes_path).should == "/#{I18n.t :universes, :scope => :resources}"
       routes.send(:universe_galaxies_path, 1).should == "/#{I18n.t :universes, :scope => :resources}/1/#{I18n.t :galaxies, :scope => :resources}"
       routes.send(:universe_galaxy_planets_path, 1, 1).should == "/#{I18n.t :universes, :scope => :resources}/1/#{I18n.t :galaxies, :scope => :resources}/1/#{I18n.t :planets, :scope => :resources}"
+      routes.send(:universe_galaxy_planet_countries_path, 1, 1, 42).should == "/#{I18n.t :universes, :scope => :resources}/1/#{I18n.t :galaxies, :scope => :resources}/1/#{I18n.t :planets, :scope => :resources}/42/#{I18n.t :countries, :scope => :resources}"
     end
 
     context "with path_names" do
@@ -234,9 +241,17 @@ describe :localized_routes do
     end
 
     it "nested resources do not deep translate with multi helpers" do
-      nested_routes.keys.should_not include(:fr_author_books) # Want fr_author_books
-    end
+      nested_routes.keys.should_not include(:fr_author_books) # Do not want fr_author_books
+    end    
 
   end
+
+  # context "just output" do
+  #   it "output all routes properly" do
+  #     nested_routes.keys.collect(&:to_s).sort.each do |k|
+  #       puts("%50s: %.80s" % [k, (nested_routes[k.to_sym].path rescue nested_routes[k.to_sym].to_s)])
+  #     end
+  #   end
+  # end
 
 end

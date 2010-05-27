@@ -18,13 +18,12 @@ module I18nRouting
       I18n.t(name.to_s, :scope => type, :default => name.to_s)      
     end
   end
-  
+
   DefaultPathNames = [:new, :edit]
   PathNamesKeys = [:path_names, :member, :collection]
 
   # Return path names hash for given resource
   def self.path_names(name, options)
-    #puts caller.join("\n")
     h = (options[:path_names] || {}).dup
     
     path_names = DefaultPathNames
@@ -35,12 +34,11 @@ module I18nRouting
     path_names.each do |pn|
       n = translation_for(name, :path_names, pn)
       n = nil if n == pn.to_s
+      # Get default path_names in path_names scope if no path_names found
       n ||= I18n.t(pn, :scope => :path_names, :default => name.to_s)
 
       h[pn] = n if n and n != name.to_s
     end
-    
-    #puts "Path Names : #{h.inspect} #{I18n.locale} (#{name})"
 
     return h
   end

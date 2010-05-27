@@ -14,6 +14,7 @@ fr:
     galaxies: 'galaxies-en-francais'
     planets: 'planetes'
     universes: 'univers'
+    countries: 'pays'
   resource:
     contact: 'contactez-nous'
   named_routes_path:

@@ -164,8 +164,6 @@ module ActionController
         options = entities.extract_options!
         opts = options.dup
 
-        opts[:controller] ||= name
-
         locales = @set.locales
         localized(nil) do
           locales.each do |l|
@@ -175,6 +173,7 @@ module ActionController
               nt = "#{l}_#{name}"
               opts[:as] = t
               opts[:glang] = l
+              opts[:controller] ||= name
               opts[:real_path] = opts[:singular] || name
               opts[:path_names] = I18nRouting.path_names(name, options)
 
