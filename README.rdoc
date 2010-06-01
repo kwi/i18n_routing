@@ -6,6 +6,12 @@ All necessary informations are available on the wiki : http://wiki.github.com/kw
 
 Works with Rails 2.3 and Rails3 !
 
+== I18n gem version warning
+
+Be careful when running Rails 2.3 with the shipped i18n gem: this is an old i18n version and i18_routing will install the latest i18n version as a gem.
+This latest version may be incompatible with some old usages.
+Furthermore, if the i18n gem is present on your system, Rails will load it and skip the shipped version; Keep that in mind.
+
 == Contributors
 
 * kwi (Guillaume Luccisano)
