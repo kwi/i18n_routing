@@ -62,7 +62,11 @@ describe :localized_routes do
             resources :authors do
               resources :books
             end
-            
+
+            resource :foo do
+              resources :bars
+            end
+
             resources :universes do
               resources :galaxies do
                 resources :planets do
@@ -219,6 +223,18 @@ describe :localized_routes do
           nested_routes[:author_books].send(v).should include(:author_id)
           nested_routes[:author_fr_books].send(v).should include(:author_id)
         end
+      end
+
+    end
+
+    context "when nested inside a singleton resource" do
+
+      it "named routes should not look like this" do
+        nested_routes[:fr_foo_fr_bars].should be_nil
+      end
+
+      it "named routes should not be nil" do
+        nested_routes[:foo_fr_bars].should_not be_nil
       end
 
     end

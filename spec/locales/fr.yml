@@ -15,7 +15,9 @@ fr:
     planets: 'planetes'
     universes: 'univers'
     countries: 'pays'
+    bars: bars_fr
   resource:
+    foo: foo_fr
     contact: 'contactez-nous'
   named_routes_path:
     about: 'a-propos'

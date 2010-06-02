@@ -5,7 +5,9 @@ en:
     galaxies: 'galaxies-en'
     planets: 'planets-en'
     universes: 'universes-en'
+    bars: bars_en
   resource:
+    foo: foo_en
     contact: 'contact-us'
   named_routes_path:
     about: 'about-our-company'
