@@ -16,5 +16,6 @@ Furthermore, if the i18n gem is present on your system, Rails will load it and s
 
 * kwi (Guillaume Luccisano)
 * bigtiger (Jim Remsik)
+* mixr (Reiner Dieterich)
 
 Copyright (c) 2010 Guillaume Luccisano - g-mai|: guillaume.luccisano, released under the MIT license
