@@ -2,11 +2,11 @@ require 'spec_helper'
 
 describe :localized_routes do
 
-  @@r = nil # Global routes in order to speed up testing
+  $r = nil # Global routes in order to speed up testing
   
   before(:all) do
 
-    if !@@r
+    if !$r
       if !rails3?
         ActionController::Routing::Routes.clear!
         ActionController::Routing::Routes.draw do |map|
@@ -34,7 +34,7 @@ describe :localized_routes do
           end
         end
       
-        @@r = ActionController::Routing::Routes
+        $r = ActionController::Routing::Routes
       
         class UrlTester
           include ActionController::UrlWriter
@@ -42,8 +42,8 @@ describe :localized_routes do
 
       else
 
-        @@r = ActionDispatch::Routing::RouteSet.new
-        @@r.draw do
+        $r = ActionDispatch::Routing::RouteSet.new
+        $r.draw do
           match 'not_about' => "not_about#show", :as => :not_about
           resources :not_users
           resource  :not_contact
@@ -77,18 +77,18 @@ describe :localized_routes do
         end
            
         class UrlTester; end
-        UrlTester.send :include, @@r.url_helpers
+        UrlTester.send :include, $r.url_helpers
 
       end
     end
 
   end
 
-  let(:nested_routes) { @@r.named_routes.instance_eval { routes } }
+  let(:nested_routes) { $r.named_routes.instance_eval { routes } }
   let(:routes) { UrlTester.new }
 
   def url_for(opts)
-    @@r.generate_extras(opts).first
+    $r.generate_extras(opts).first
   end
 
   context "do not break existing behavior" do
