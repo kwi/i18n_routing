@@ -136,6 +136,13 @@ module I18nRouting
     # end
     #
     def localized(locales = I18n.available_locales, opts = {})
+      # Add if not added Rails.root/config/locales/*.yml in the I18n.load_path
+      if !@i18n_routing_path_set and defined?(Rails) and Rails.respond_to?(:root) and Rails.root
+        I18n.load_path = (I18n.load_path << Dir[Rails.root.join('config', 'locales', '*.yml')]).uniq
+        @i18n_routing_path_set = true
+      end
+      
+      
       old_value = @locales
       @locales = locales
       @i18n_verbose ||= opts.delete(:verbose)
