@@ -34,9 +34,12 @@ module I18nRouting
         @locales.each do |locale|
           I18n.locale = locale
           localized_path = I18nRouting.translation_for(resource.name, type)
+          force_for_locale = options[:force] && options[:force].include?(locale)
 
           # A translated route exists :
-          if localized_path and localized_path != resource.name.to_s and String === localized_path
+          if (localized_path and localized_path != resource.name.to_s and String === localized_path) | force_for_locale
+            options[:force].delete(locale) if force_for_locale # enforcing a route for this locale
+
             puts("[I18n] > localize %-10s: %40s (%s) => /%s" % [type, resource.name, locale, localized_path]) if @i18n_verbose
             opts = options.dup
             opts[:path] = localized_path.to_sym
