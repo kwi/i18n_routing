@@ -18,6 +18,7 @@ fr:
     bars: bars_fr
   resource:
     foo: foo_fr
+    foofoo: froufrou
     contact: 'contactez-nous'
   named_routes_path:
     about: 'a-propos'

@@ -23,6 +23,13 @@ describe :localized_routes do
             map.resources :authors do |m|
               m.resources :books
             end
+            
+            map.resource :foo do |m|
+              m.resources :bars
+              m.resource :foofoo do |mm|
+                mm.resources :bars
+              end
+            end
 
             map.resources :universes do |m|
               m.resources :galaxies do |mm|
@@ -65,6 +72,9 @@ describe :localized_routes do
 
             resource :foo do
               resources :bars
+              resource :foofoo do
+                resources :bars
+              end
             end
 
             resources :universes do
@@ -229,13 +239,19 @@ describe :localized_routes do
 
     context "when nested inside a singleton resource" do
 
-      it "named routes should not look like this" do
+      it "named routes should have corretly locale placed" do
         nested_routes[:fr_foo_fr_bars].should be_nil
-      end
-
-      it "named routes should not be nil" do
         nested_routes[:foo_fr_bars].should_not be_nil
       end
+
+      it "routes should be translated corretly" do
+        routes.send(:foo_bars_path).should == "/#{I18n.t :foo, :scope => :resource}/#{I18n.t :bars, :scope => :resources}"
+      end
+
+      it "routes should be translated corretly also with deep nested singleton resource" do
+        routes.send(:foo_foofoo_bars_path).should == "/#{I18n.t :foo, :scope => :resource}/#{I18n.t :foofoo, :scope => :resource}/#{I18n.t :bars, :scope => :resources}"
+      end
+
 
     end
 

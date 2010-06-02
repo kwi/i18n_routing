@@ -52,19 +52,27 @@ module I18nRouting
                 send(type, *res) do
                   # In the resource(s) block, we need to keep and restore some context :
 
-                  old_name = @scope[:i18n_real_resource_name]
-                  old = @scope[:scope_level_resource]
-                  old_i = @scope[:i18n_scope_level_resource]
+                  if block
+                    old_name = @scope[:i18n_real_resource_name]
+                    old = @scope[:scope_level_resource]
 
-                  @scope[:i18n_real_resource_name] = resource.name
-                  @scope[:i18n_scope_level_resource] = old
-                  @scope[:scope_level_resource] = resource
+                    @scope[:i18n_real_resource_name] = resource.name
+                    @scope[:i18n_scope_level_resource] = old
+                    @scope[:scope_level_resource] = resource
+                  
+                    if type == :resource and @scope[:name_prefix]
+                      # Need to fake name_prefix for singleton resource
+                      @scope[:name_prefix].gsub!(Regexp.new("#{old.name}$"), resource.name)
+                    end
 
-                  block.call if block
+                    block.call if block
+
+                    @scope[:scope_level_resource] = old
+                    @scope[:i18n_real_resource_name] = old_name
+                  end
 
                   @scope[:i18n_scope_level_resource] = nil
-                  @scope[:scope_level_resource] = old
-                  @scope[:i18n_real_resource_name] = old_name
+
                 end
               end
             end
@@ -229,7 +237,7 @@ module I18nRouting
         rfname = "#{m}_without_i18n_routing".to_sym
         mod.send :define_method, "#{m}_with_i18n_routing".to_sym do |*args, &block|
           
-           if @localized_branch and @scope[:i18n_scope_level_resource] and @scope[:i18n_real_resource_name]
+          if @localized_branch and @scope[:i18n_scope_level_resource] and @scope[:i18n_real_resource_name]
             o = @scope[:scope_level_resource]
             @scope[:scope_level_resource] = @scope[:i18n_scope_level_resource]
 

@@ -1,3 +1,7 @@
+0.3.3 (June 2, 2010)
+
+* Fix Rails3 issue with nested single resource
+
 0.3.2 (June 2, 2010)
 
 * Add automatically config/locales/*.yml in the i18n load path in order to fix Rails3 issue
