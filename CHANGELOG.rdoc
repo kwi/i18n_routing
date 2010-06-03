@@ -1,6 +1,10 @@
+0.3.4 (June 3, 2010)
+
+* Fix Rails3 issue with nested single resource again and pluralize controller name as it should be
+
 0.3.3 (June 2, 2010)
 
-* Fix Rails3 issue with nested single resource and pluralize controller name as it should be
+* Fix Rails3 issue with nested single resource
 
 0.3.2 (June 2, 2010)
 
