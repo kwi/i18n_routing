@@ -59,10 +59,10 @@ module I18nRouting
                     @scope[:i18n_real_resource_name] = resource.name
                     @scope[:i18n_scope_level_resource] = old
                     @scope[:scope_level_resource] = resource
-                  
+
                     if type == :resource and @scope[:name_prefix]
                       # Need to fake name_prefix for singleton resource
-                      @scope[:name_prefix].gsub!(Regexp.new("#{old.name}$"), resource.name)
+                      @scope[:name_prefix] = @scope[:name_prefix].gsub(Regexp.new("#{old.name}$"), resource.name)
                     end
 
                     block.call if block

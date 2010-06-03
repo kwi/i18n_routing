@@ -165,7 +165,7 @@ describe :localized_routes do
       routes.send(:about_path).should == "/#{I18n.t :about, :scope => :named_routes_path}"
     end
 
-    it "resource generates routes using localized valuess" do
+    it "resource generates routes using localized values" do
       routes.send(:contact_path).should == "/#{I18n.t :contact, :scope => :resource}"
     end
 
@@ -239,16 +239,20 @@ describe :localized_routes do
 
     context "when nested inside a singleton resource" do
 
-      it "named routes should have corretly locale placed" do
+      it "named routes should have locale placed at correct position" do
         nested_routes[:fr_foo_fr_bars].should be_nil
         nested_routes[:foo_fr_bars].should_not be_nil
       end
 
-      it "routes should be translated corretly" do
+      it "routes for the singleton resource alone should be translated correctly" do
+        routes.send(:foo_path).should == "/#{I18n.t :foo, :scope => :resource}"
+      end
+
+      it "routes should be translated correctly" do
         routes.send(:foo_bars_path).should == "/#{I18n.t :foo, :scope => :resource}/#{I18n.t :bars, :scope => :resources}"
       end
 
-      it "routes should be translated corretly also with deep nested singleton resource" do
+      it "routes should be translated correctly also with deep nested singleton resource" do
         routes.send(:foo_foofoo_bars_path).should == "/#{I18n.t :foo, :scope => :resource}/#{I18n.t :foofoo, :scope => :resource}/#{I18n.t :bars, :scope => :resources}"
       end
 
