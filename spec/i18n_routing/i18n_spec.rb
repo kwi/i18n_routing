@@ -152,6 +152,10 @@ describe :localized_routes do
       routes.send(:universe_galaxies_path, 1).should == "/universes/1/galaxies"
       routes.send(:universe_galaxy_planets_path, 1, 1).should == "/universes/1/galaxies/1/planets"
     end
+    
+    it "single resource should have by default the pluralized controller" do
+      nested_routes[:foo].defaults[:controller].should == 'foos'
+    end
 
   end
 
@@ -255,7 +259,6 @@ describe :localized_routes do
       it "routes should be translated correctly also with deep nested singleton resource" do
         routes.send(:foo_foofoo_bars_path).should == "/#{I18n.t :foo, :scope => :resource}/#{I18n.t :foofoo, :scope => :resource}/#{I18n.t :bars, :scope => :resources}"
       end
-
 
     end
 

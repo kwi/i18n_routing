@@ -40,7 +40,7 @@ module I18nRouting
             puts("[I18n] > localize %-10s: %40s (%s) => /%s" % [type, resource.name, locale, localized_path]) if @i18n_verbose
             opts = options.dup
             opts[:path] = localized_path.to_sym
-            opts[:controller] ||= r
+            opts[:controller] ||= r.to_s.pluralize
 
             res = ["#{locale}_#{r}".to_sym, opts]
 

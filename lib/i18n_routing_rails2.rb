@@ -173,7 +173,7 @@ module ActionController
               nt = "#{l}_#{name}"
               opts[:as] = t
               opts[:glang] = l
-              opts[:controller] ||= name
+              opts[:controller] ||= name.to_s.pluralize
               opts[:real_path] = opts[:singular] || name
               opts[:path_names] = I18nRouting.path_names(name, options)
 
