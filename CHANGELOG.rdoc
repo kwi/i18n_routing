@@ -1,3 +1,7 @@
+0.3.5 (June x, 2010)
+
+* Clean up some .to_sym in order to avoid unnecessary symbols during runtime
+
 0.3.4 (June 3, 2010)
 
 * Fix Rails3 issue with nested single resource again and pluralize controller name as it should be

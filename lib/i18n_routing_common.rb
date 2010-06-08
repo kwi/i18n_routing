@@ -7,12 +7,12 @@ module I18nRouting
 
     # First, if an option is given, try to get the translation in the routes scope
     if option
-      t = I18n.t(option.to_sym, :scope => "routes.#{name}.#{type}".to_sym, :default => option.to_s)
+      t = I18n.t(option, :scope => "routes.#{name}.#{type}", :default => option.to_s)
 
       return (t || name)
     else
       # Try to get the translation in routes namescope first      
-      t = I18n.t(:as, :scope => "routes.#{name}".to_sym, :default => name.to_s)
+      t = I18n.t(:as, :scope => "routes.#{name}", :default => name.to_s)
       
       return t if t and t != name.to_s
 
