@@ -21,7 +21,7 @@ module ActionController
         def generation_requirements
           r = mkd_generation_requirements
           if @glang and !r.blank?
-            r << " and I18n.locale == :#{@glang}"
+            r << " and I18n.locale.to_sym == :#{@glang}"
           end
 
           return r

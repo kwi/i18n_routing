@@ -1,6 +1,8 @@
-0.3.5 (June x, 2010)
+0.3.5 (June 9, 2010)
 
 * Clean up some .to_sym in order to avoid unnecessary symbols during runtime
+* Works with both I18n.locale as string or as symbol
+* Try to fix a Pathname instead of string issue
 
 0.3.4 (June 3, 2010)
 

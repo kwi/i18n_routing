@@ -169,6 +169,13 @@ describe :localized_routes do
       routes.send(:about_path).should == "/#{I18n.t :about, :scope => :named_routes_path}"
     end
 
+    it "named_route generates route using localized values and I18n.locale as a string" do
+      o = I18n.locale
+      I18n.locale = "fr"
+      routes.send(:about_path).should == "/#{I18n.t :about, :scope => :named_routes_path}"
+      I18n.locale = o
+    end
+
     it "resource generates routes using localized values" do
       routes.send(:contact_path).should == "/#{I18n.t :contact, :scope => :resource}"
     end
