@@ -7,16 +7,19 @@ module I18nRouting
 
     # First, if an option is given, try to get the translation in the routes scope
     if option
-      t = I18n.t(option, :scope => "routes.#{name}.#{type}", :default => option.to_s)
-
-      return (t || name)
+      default = "{option}Noi18nRoutingTranslation"
+      t = I18n.t(option, :scope => "routes.#{name}.#{type}", :default => default)
+      return (t == default ? nil : t)
     else
-      # Try to get the translation in routes namescope first      
-      t = I18n.t(:as, :scope => "routes.#{name}", :default => name.to_s)
-      
-      return t if t and t != name.to_s
+      default = "{name}Noi18nRoutingTranslation"
 
-      I18n.t(name.to_s, :scope => type, :default => name.to_s)      
+      # Try to get the translation in routes namescope first      
+      t = I18n.t(:as, :scope => "routes.#{name}", :default => default)
+
+      return t if t and t != default
+
+      t = I18n.t(name.to_s, :scope => type, :default => default)
+      return (t == default ? nil : t)
     end
   end
 

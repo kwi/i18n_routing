@@ -36,7 +36,7 @@ module I18nRouting
           localized_path = I18nRouting.translation_for(resource.name, type)
 
           # A translated route exists :
-          if localized_path and localized_path != resource.name.to_s and String === localized_path
+          if localized_path and String === localized_path
             puts("[I18n] > localize %-10s: %40s (%s) => /%s" % [type, resource.name, locale, localized_path]) if @i18n_verbose
             opts = options.dup
             opts[:path] = localized_path
@@ -279,7 +279,7 @@ module I18nRouting
       # try to get translated path :
       I18n.locale = locale
       ts = @path.gsub(/^\//, '')
-      @localized_path = '/' + I18nRouting.translation_for(ts, :named_routes_path)
+      @localized_path = '/' + (I18nRouting.translation_for(ts, :named_routes_path) || ts)
 
       # If a translated path exists, set localized infos
       if @localized_path and @localized_path != @path

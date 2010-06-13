@@ -193,7 +193,7 @@ describe :localized_routes do
       routes.send(:author_books_path, 1).should == "/#{I18n.t :authors, :scope => :resources}/1/#{I18n.t :books, :scope => :resources}"
     end
 
-    it "deep nested resources generate routes using localized values" do
+    it "deep nested resources generate routes using localized values and translate routes even translated name is the same" do
       routes.send(:universes_path).should == "/#{I18n.t :universes, :scope => :resources}"
       routes.send(:universe_galaxies_path, 1).should == "/#{I18n.t :universes, :scope => :resources}/1/#{I18n.t :galaxies, :scope => :resources}"
       routes.send(:universe_galaxy_planets_path, 1, 1).should == "/#{I18n.t :universes, :scope => :resources}/1/#{I18n.t :galaxies, :scope => :resources}/1/#{I18n.t :planets, :scope => :resources}"
@@ -211,7 +211,7 @@ describe :localized_routes do
         routes.send(:new_user_path).should == "/#{I18n.t :users, :scope => :resources}/#{I18n.t :new, :scope => :'routes.users.path_names'}"
         routes.send(:edit_user_path, 42).should == "/#{I18n.t :users, :scope => :resources}/42/#{I18n.t :edit, :scope => :'routes.users.path_names'}"
       end
-
+      
     end
     
     context "with member and collection" do

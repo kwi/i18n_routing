@@ -11,7 +11,7 @@ fr:
     users: utilisateurs
     authors: 'auteurs'
     books: 'livres'
-    galaxies: 'galaxies-en-francais'
+    galaxies: 'galaxies'
     planets: 'planetes'
     universes: 'univers'
     countries: 'pays'
@@ -24,4 +24,4 @@ fr:
     about: 'a-propos'
   path_names:
     new: 'nouveau'
-    edit: 'edition'  
+    edit: 'edition'

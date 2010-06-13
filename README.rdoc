@@ -6,13 +6,11 @@ All necessary informations are available on the wiki: http://wiki.github.com/kwi
 
 For any question, use the i18_routing google group: http://groups.google.com/group/i18n-routing
 
-Works with Rails 2.3 and Rails3 beta3 !
+Works with Rails 2.3 and Rails3 beta4 !
 
 == TODO for next releases (written the 9th of June)
 
 * Handle multiple translations for same resources name (Example: nested and not nested resources)
-* Find a way to force translation when the translation is the same
-* Do the translation if only the path names are translated and not the path
 * Handle namespace translation
 
 == I18n gem version warning
