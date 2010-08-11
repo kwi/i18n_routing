@@ -176,6 +176,8 @@ module ActionController
               opts[:controller] ||= name.to_s.pluralize
               opts[:real_path] = opts[:singular] || name
               opts[:path_names] = I18nRouting.path_names(name, options)
+              path_prefix_t = I18n.t(:path_prefix, :scope => :"routes.#{name}", :default => "NoPathPrefixTranslation")
+              opts[:path_prefix] = path_prefix_t unless path_prefix_t == "NoPathPrefixTranslation"
 
               localized([l]) do
                 switch_no_named_localization(true) do
