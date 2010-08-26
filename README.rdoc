@@ -25,6 +25,6 @@ Furthermore, if the i18n gem is present on your system, Rails will load it and s
 * bigtiger (Jim Remsik)
 * mixr (Reiner Dieterich)
 * fwalch
-* doubledrones
+* doubledrones: h13ronim (Marcin Michałowski)
 
 Copyright (c) 2010 Guillaume Luccisano - g-mai|: guillaume.luccisano, released under the MIT license
