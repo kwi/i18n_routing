@@ -7,6 +7,9 @@ fr:
         groups: 'groupe'
         new: 'nouvel_utilisateur'
         edit: 'edition_utilisateur'
+    drones:
+      as: senord
+      path_prefix: '/senordelbuod/xirtaminu/orez'
   resources:
     users: utilisateurs
     authors: 'auteurs'

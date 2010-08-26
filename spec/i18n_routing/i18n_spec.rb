@@ -38,6 +38,8 @@ describe :localized_routes do
                 end
               end
             end
+
+            map.resources :drones, :path_prefix => 'doubledrones/unimatrix/zero'
           end
         end
       
@@ -187,6 +189,10 @@ describe :localized_routes do
     it "url_for generates routes using localized values" do
       url_for(:controller => :users).should == "/#{I18n.t :as, :scope => :'routes.users'}"
       url_for(:controller => :about, :action => :show).should == "/#{I18n.t :about, :scope => :named_routes_path}"
+    end
+
+    it "url_for generates routes for drones with path prefix" do
+      url_for(:controller => :drones).should == "#{I18n.t :path_prefix, :scope => :'routes.drones'}/#{I18n.t :as, :scope => :'routes.drones'}"
     end
 
     it "nested resources generate routes using localized values" do
