@@ -28,6 +28,7 @@ else
   require 'action_controller'
   require 'action_dispatch'
   require 'rack/mount'
+  require 'active_support/core_ext/hash/slice.rb'
 end
 
 def rails3?

@@ -119,6 +119,7 @@ module I18nRouting
       # Add i18n as valid conditions for Rack::Mount
       @valid_conditions = @set.instance_eval { @set }.instance_eval { @valid_conditions }
       @valid_conditions << :i18n_locale if !@valid_conditions.include?(:i18n_locale)
+      @set.valid_conditions << :i18n_locale if !@set.valid_conditions.include?(:i18n_locale)
 
       # Extends the current RouteSet in order to define localized helper for named routes
       # When calling define_url_helper, it calls define_localized_url_helper too.

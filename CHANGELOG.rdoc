@@ -1,3 +1,7 @@
+0.3.7 (August 26, 2010)
+
+* Support Rails3 RC2 thanks to fwalch / Rails3 final will probably require a new version of i18n_routing
+
 0.3.6 (June 13, 2010)
 
 * Works even if translations are the same as the translated name

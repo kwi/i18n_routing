@@ -6,7 +6,7 @@ All necessary informations are available on the wiki: http://wiki.github.com/kwi
 
 For any question, use the i18_routing google group: http://groups.google.com/group/i18n-routing
 
-Works with Rails 2.3 and Rails3 beta4 !
+Works with Rails 2.3 and Rails3 RC2 !
 
 == TODO for next releases (written the 9th of June)
 
@@ -24,5 +24,6 @@ Furthermore, if the i18n gem is present on your system, Rails will load it and s
 * kwi (Guillaume Luccisano)
 * bigtiger (Jim Remsik)
 * mixr (Reiner Dieterich)
+* fwalch
 
 Copyright (c) 2010 Guillaume Luccisano - g-mai|: guillaume.luccisano, released under the MIT license
