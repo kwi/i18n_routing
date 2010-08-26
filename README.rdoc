@@ -11,7 +11,7 @@ Works with Rails 2.3 and Rails3 RC2 ! (nested resources currently do not work on
 == TODO for next releases (written the 9th of June)
 
 * Handle multiple translations for same resources name (Example: nested and not nested resources)
-* Handle namespace translation
+* Handle namespace translation (and path_prefix on Rails3)
 
 == I18n gem version warning
 
@@ -25,5 +25,6 @@ Furthermore, if the i18n gem is present on your system, Rails will load it and s
 * bigtiger (Jim Remsik)
 * mixr (Reiner Dieterich)
 * fwalch
+* doubledrones
 
 Copyright (c) 2010 Guillaume Luccisano - g-mai|: guillaume.luccisano, released under the MIT license

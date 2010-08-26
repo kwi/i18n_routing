@@ -191,8 +191,10 @@ describe :localized_routes do
       url_for(:controller => :about, :action => :show).should == "/#{I18n.t :about, :scope => :named_routes_path}"
     end
 
-    it "url_for generates routes for drones with path prefix" do
-      url_for(:controller => :drones).should == "#{I18n.t :path_prefix, :scope => :'routes.drones'}/#{I18n.t :as, :scope => :'routes.drones'}"
+    if !rails3?
+      it "url_for generates routes for drones with path prefix" do
+        url_for(:controller => :drones).should == "#{I18n.t :path_prefix, :scope => :'routes.drones'}/#{I18n.t :as, :scope => :'routes.drones'}"
+      end
     end
 
     it "nested resources generate routes using localized values" do
