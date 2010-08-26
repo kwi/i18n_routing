@@ -1,6 +1,7 @@
 0.3.7 (August 26, 2010)
 
 * Support Rails3 RC2 thanks to fwalch / Rails3 final will probably require a new version of i18n_routing
+* Not everything works on RC2 (nested resources), will be fixed when Rails3 will be officially released.
 
 0.3.6 (June 13, 2010)
 
