@@ -182,15 +182,18 @@ module I18nRouting
     
     def match(*args)
       # Localize simple match only if there is no resource scope.
-      if args.size == 1 and @locales and !parent_resource and args.first[:as]
+      if args.size == 1 and @locales and !parent_resource and args.last.is_a?(Hash) and args.first[:as]
+        options = Marshal.load(Marshal.dump(args.first))
+        path, to = options.find { |name, value| name.is_a?(String) }
+        options.merge!(:to => to).delete(path)        
         @locales.each do |locale|
-          mapping = LocalizedMapping.new(locale, @set, @scope, Marshal.load(Marshal.dump(args))) # Dump is dirty but how to make deep cloning easily ? :/
+          mapping = LocalizedMapping.new(locale, @set, @scope, path, options) # Dump is dirty but how to make deep cloning easily ? :/
           if mapping.localizable?
             puts("[I18n] > localize %-10s: %40s (%s) => %s" % ['route', args.first[:as], locale, mapping.path]) if @i18n_verbose
             @set.add_route(*mapping.to_route)
           end
         end
-
+      
         # Now, create the real match :
         return set_localizable_route(args.first[:as]) do
           super
@@ -274,12 +277,13 @@ module I18nRouting
 
     attr_reader :path
 
-    def initialize(locale, set, scope, args)
-      super(set, scope, args.clone)
+    def initialize(locale, set, scope, path, options)
+      super(set, scope, path.clone, options ? options.clone : nil)
 
       # try to get translated path :
       I18n.locale = locale
       ts = @path.gsub(/^\//, '')
+      ts.gsub!('(.:format)', '')
       @localized_path = '/' + (I18nRouting.translation_for(ts, :named_routes_path) || ts)
 
       # If a translated path exists, set localized infos
@@ -373,5 +377,5 @@ module I18nRouting
   end
 end
 
-ActionDispatch::Routing::Mapper.send  :include, I18nRouting::Mapper
-Rack::Mount::Route.send               :include, I18nRouting::RackMountRoute
+ActionDispatch::Routing::Mapper.send    :include, I18nRouting::Mapper
+Rack::Mount::Route.send                 :include, I18nRouting::RackMountRoute

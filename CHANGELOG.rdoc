@@ -1,3 +1,7 @@
+0.3.8 (August 30, 2010)
+
+* Support the first Rails3 official release (but nested resources is still broken)
+
 0.3.7 (August 26, 2010)
 
 * Support Rails3 RC2 thanks to fwalch / Rails3 final will probably require a new version of i18n_routing
