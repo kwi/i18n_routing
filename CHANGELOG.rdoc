@@ -1,3 +1,7 @@
+0.4.0 (September 08, 2010)
+
+* Full support for Rails 3.0.0
+
 0.3.8 (August 30, 2010)
 
 * Support the first Rails3 official release (but nested resources is still broken)

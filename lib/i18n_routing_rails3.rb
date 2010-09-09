@@ -28,7 +28,7 @@ module I18nRouting
         options = res.extract_options!
         r = res.first
 
-        resource = type == :resource ? ActionDispatch::Routing::Mapper::SingletonResource.new(r, options.dup) : ActionDispatch::Routing::Mapper::Resource.new(r, options.dup)
+        resource = resource_from_params(type, r, options.dup)
 
         # Check for translated resource
         @locales.each do |locale|
@@ -41,6 +41,8 @@ module I18nRouting
             opts = options.dup
             opts[:path] = localized_path
             opts[:controller] ||= r.to_s.pluralize
+            
+            resource = resource_from_params(type, r, opts.dup)
 
             res = ["#{locale}_#{r}".to_sym, opts]
 
@@ -50,8 +52,8 @@ module I18nRouting
             scope(:constraints => constraints, :path_names => I18nRouting.path_names(resource.name, @scope)) do
               localized_branch(locale) do
                 send(type, *res) do
+                  
                   # In the resource(s) block, we need to keep and restore some context :
-
                   if block
                     old_name = @scope[:i18n_real_resource_name]
                     old = @scope[:scope_level_resource]
@@ -106,7 +108,7 @@ module I18nRouting
     
     # Return the aproximate deep in scope level
     def nested_deep
-      (@scope and Array === @scope[:blocks] and @scope[:scope_level]) ? @scope[:blocks].size : 0
+      (@scope and Array === @scope[:nested_deep] and @scope[:scope_level]) ? @scope[:nested_deep].size : 0
     end
 
     public
@@ -204,14 +206,16 @@ module I18nRouting
     end
     
     def create_globalized_resources(type, *resources, &block)
-
       #puts "#{' ' * nested_deep}Call #{type} : #{resources.inspect} (#{@locales.inspect}) (#{@localized_branch}) (#{@skip_localization})"
+
+      @scope[:nested_deep] ||= []
+      @scope[:nested_deep] << 1
 
       cur_scope = nil
       if @locales
         localized = localized_resources(type, *resources, &block) if !@skip_localization
 
-        ## We do not translate if we are in a translations branch :
+        ## We do not translate if we are in a translation branch :
         return if localized and nested_deep > 0
 
         # Set the current standard resource in order to customize url helper :
@@ -227,6 +231,8 @@ module I18nRouting
           send("#{type}_without_i18n_routing".to_sym, *resources, &block)
         end
       end
+      
+      @scope[:nested_deep].pop
 
     end
     
