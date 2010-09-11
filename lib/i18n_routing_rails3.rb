@@ -290,7 +290,7 @@ module I18nRouting
       I18n.locale = locale
       ts = @path.gsub(/^\//, '')
       ts.gsub!('(.:format)', '')
-      @localized_path = '/' + (I18nRouting.translation_for(ts, :named_routes_path) || ts)
+      @localized_path = (@scope[:path] || '/') + (!ts.blank? ? (I18nRouting.translation_for(ts, :named_routes_path) || ts) : '')
 
       # If a translated path exists, set localized infos
       if @localized_path and @localized_path != @path

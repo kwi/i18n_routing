@@ -16,10 +16,10 @@ describe :localized_routes do
 
           map.localized(I18n.available_locales, :verbose => false) do
             map.about 'about', :controller => 'about', :action => :show
-
+            
             map.resources :users, :member => {:level => :get}, :collection => {:groups => :get}
             map.resource  :contact
-
+            
             map.resources :authors do |m|
               m.resources :books
             end
@@ -30,7 +30,7 @@ describe :localized_routes do
                 mm.resources :bars
               end
             end
-
+            
             map.resources :universes do |m|
               m.resources :galaxies do |mm|
                 mm.resources :planets do |mmm|
@@ -38,7 +38,8 @@ describe :localized_routes do
                 end
               end
             end
-
+            
+            map.localized_root '/', :controller => "about", :action => "show", :path_prefix => ':locale'
             map.resources :drones, :path_prefix => 'doubledrones/unimatrix/zero'
           end
         end
@@ -59,6 +60,10 @@ describe :localized_routes do
 
           localized(I18n.available_locales, :verbose => false) do
             match 'about' => "about#show", :as => :about
+
+            scope '/:locale', :constraints => { :locale => /[a-z]{2}/ } do
+              match '/' => "about#show", :as => :localized_root
+            end
 
             resources :users do
               member do
@@ -165,6 +170,10 @@ describe :localized_routes do
 
     before do
       I18n.locale = :fr
+    end
+    
+    it "scope with parameters should be respected" do
+      routes.send(:localized_root_path, I18n.locale).should == "/#{I18n.locale}"
     end
 
     it "named_route generates route using localized values" do

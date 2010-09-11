@@ -1,3 +1,7 @@
+0.4.1 (September 11, 2010)
+
+* Fix a Rails3 bug for named routes and prefixed path
+
 0.4.0 (September 08, 2010)
 
 * Full support for Rails 3.0.0
