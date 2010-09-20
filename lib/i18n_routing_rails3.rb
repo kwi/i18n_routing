@@ -246,24 +246,28 @@ module I18nRouting
       [:map_method, :member, :collection].each do |m|
         rfname = "#{m}_without_i18n_routing".to_sym
         mod.send :define_method, "#{m}_with_i18n_routing".to_sym do |*args, &block|
-          
+      
           if @localized_branch and @scope[:i18n_scope_level_resource] and @scope[:i18n_real_resource_name]
             o = @scope[:scope_level_resource]
             @scope[:scope_level_resource] = @scope[:i18n_scope_level_resource]
-
+      
             pname = @scope[:path_names] || {}
-            pname[args[1]] = args[1]
+            i = 1
+            while i < args.size and (String === args[i] or Symbol === args[i])
+              pname[args[i]] = args[i]
+              i += 1
+            end
             scope(:path_names => I18nRouting.path_names(@scope[:i18n_real_resource_name], {:path_names => pname})) do
               send(rfname, *args, &block)
             end
             @scope[:scope_level_resource] = o
             return
           end
-
+      
           send(rfname, *args, &block)
           
         end
-
+      
         mod.send :alias_method_chain, m, :i18n_routing
       end
     end

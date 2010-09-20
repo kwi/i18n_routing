@@ -17,7 +17,7 @@ describe :localized_routes do
           map.localized(I18n.available_locales, :verbose => false) do
             map.about 'about', :controller => 'about', :action => :show
             
-            map.resources :users, :member => {:level => :get}, :collection => {:groups => :get}
+            map.resources :users, :member => {:level => :get, :one => :get, :two => :get}, :collection => {:groups => :get}
             map.resource  :contact
             
             map.resources :authors do |m|
@@ -68,6 +68,7 @@ describe :localized_routes do
             resources :users do
               member do
                 get :level
+                get :one, :two
               end
               get :groups, :on => :collection
             end
@@ -238,6 +239,8 @@ describe :localized_routes do
         routes.send(:level_user_path, 42).should == "/#{I18n.t :users, :scope => :resources}/42/level"        
         I18n.locale = :fr
         routes.send(:level_user_path, 42).should == "/#{I18n.t :users, :scope => :resources}/42/#{I18n.t :level, :scope => :'routes.users.path_names'}"
+        routes.send(:one_user_path, 42).should == "/#{I18n.t :users, :scope => :resources}/42/#{I18n.t :one, :scope => :'routes.users.path_names'}"
+        routes.send(:two_user_path, 42).should == "/#{I18n.t :users, :scope => :resources}/42/#{I18n.t :two, :scope => :'routes.users.path_names'}"
       end
 
       it "custom collection" do
