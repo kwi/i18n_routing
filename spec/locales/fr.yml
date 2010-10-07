@@ -27,6 +27,7 @@ fr:
     contact: 'contactez-nous'
   named_routes_path:
     about: 'a-propos'
+    'welcome/to/our/page': 'bienvenue/sur/notre/site' # no idea about french translation ;-) --R
   path_names:
     new: 'nouveau'
     edit: 'edition'

@@ -11,3 +11,5 @@ en:
     contact: 'contact-us'
   named_routes_path:
     about: 'about-our-company'
+  named_routes:
+    welcome: 'welcome-to-our-page'

@@ -16,6 +16,7 @@ describe :localized_routes do
 
           map.localized(I18n.available_locales, :verbose => false) do
             map.about 'about', :controller => 'about', :action => :show
+            map.welcome 'welcome/to/our/page', :controller => :welcome, :action => :index
             
             map.resources :users, :member => {:level => :get, :one => :get, :two => :get}, :collection => {:groups => :get}
             map.resource  :contact
@@ -60,6 +61,7 @@ describe :localized_routes do
 
           localized(I18n.available_locales, :verbose => false) do
             match 'about' => "about#show", :as => :about
+            match 'welcome/to/our/page' => "welcome#index", :as => :welcome
 
             scope '/:locale', :constraints => { :locale => /[a-z]{2}/ } do
               match '/' => "about#show", :as => :localized_root
@@ -137,6 +139,7 @@ describe :localized_routes do
 
     it "named_route uses default values" do
       routes.send(:about_path).should == "/about"
+      routes.send(:welcome_path).should == '/welcome/to/our/page'
     end
 
     it "resource generates routes using default values" do
@@ -180,6 +183,16 @@ describe :localized_routes do
     it "named_route generates route using localized values" do
       routes.send(:about_path).should == "/#{I18n.t :about, :scope => :named_routes_path}"
     end
+    
+    it "named_route generated route from actual route name" do
+      I18n.locale = :en
+      routes.send(:welcome_path).should == "/#{I18n.t :welcome, :scope => :named_routes}"        
+      I18n.locale = :fr
+    end
+    
+    it "named_route generates route from route path when route name  not available" do
+      routes.send(:welcome_path).should == "/#{I18n.t 'welcome/to/our/page', :scope => :named_routes_path}"
+    end 
 
     it "named_route generates route using localized values and I18n.locale as a string" do
       o = I18n.locale
