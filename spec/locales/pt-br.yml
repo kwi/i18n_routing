@@ -1,0 +1,9 @@
+pt-BR:
+  resources:
+    users: users-pt-br
+  resource:
+    foo: foo_fr-pt-br
+  named_routes_path:
+    about: 'a-propos-pt-br'
+  path_names:
+    new: 'nouveau-pt-br'

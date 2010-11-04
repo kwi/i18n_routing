@@ -21,7 +21,7 @@ module ActionController
         def generation_requirements
           r = mkd_generation_requirements
           if @glang and !r.blank?
-            r << " and I18n.locale.to_sym == :#{@glang}"
+            r << " and I18n.locale.to_sym == :'#{@glang}'"
           end
 
           return r
@@ -73,7 +73,7 @@ module ActionController
               alias_method :gl#{selector}, :#{selector}
 
               def #{selector}(*args)
-                selector_g = '#{rlang}'.gsub('glang', I18n.locale.to_s).to_sym
+                selector_g = '#{rlang}'.gsub('glang', I18nRouting.locale_escaped(I18n.locale)).to_sym
 
                 #logger.debug "Call routes : #{selector} => \#{selector_g} (#{rlang}) "
                 #puts "Call routes : #{selector} => \#{selector_g} (#{rlang}) Found:\#{respond_to? selector_g and selector_g != :#{selector}}"
@@ -98,7 +98,7 @@ module ActionController
 
           @locales.each do |l|
             I18n.locale = l
-            nt = "#{l}_#{name}"
+            nt = "#{I18nRouting.locale_escaped(l)}_#{name}"
             t = I18nRouting.translation_for(name, :named_routes) || I18nRouting.translation_for(path, :named_routes_path)
             if nt != name and t
               gl_add_named_route(nt, t, options.merge(:glang => l))
@@ -169,9 +169,8 @@ module ActionController
         localized(nil) do
           locales.each do |l|
             I18n.locale = l
-            nt = "#{l}_#{name}"
+            nt = "#{I18nRouting.locale_escaped(l)}_#{name}"
             if nt != name and (t = I18nRouting.translation_for(name, namespace))
-              nt = "#{l}_#{name}"
               opts[:as] = t
               opts[:glang] = l
               opts[:controller] ||= name.to_s.pluralize

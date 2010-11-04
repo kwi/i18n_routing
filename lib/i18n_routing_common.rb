@@ -2,6 +2,10 @@
 
 # I18nRouting module for common usage methods
 module I18nRouting
+  def self.locale_escaped(locale)
+    locale.to_s.downcase.gsub('-', '_')
+  end
+  
   # Return the correct translation for given values
   def self.translation_for(name, type = :resources, option = nil)
 

@@ -1,3 +1,11 @@
+0.4.4 (November 03, 2010)
+
+* Fix bug with locale with a dash like pt-br
+
+0.4.3 (October 10, 2010)
+
+* Named route can be translated by name or by path
+
 0.4.2 (September 20, 2010)
 
 * Fix a Rails3 bug, enabling again to do things like that: get :one, :two, :three

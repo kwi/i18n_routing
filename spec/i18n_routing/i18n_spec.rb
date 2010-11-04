@@ -325,6 +325,30 @@ describe :localized_routes do
 
   end
 
+  context 'locale with a dash (pt-br)' do
+
+    before do
+      I18n.locale = 'pt-BR'
+    end
+
+    it 'users resources' do
+      routes.send(:users_path).should == "/#{I18n.t :users, :scope => :'resources'}"
+    end
+    
+    it "routes for the singleton resource alone should be translated correctly" do
+      routes.send(:foo_path).should == "/#{I18n.t :foo, :scope => :resource}"
+    end
+    
+    it "named_route generates route using localized values" do
+      routes.send(:about_path).should == "/#{I18n.t :about, :scope => :named_routes_path}"
+    end
+    
+    it "custom translated path names" do
+      routes.send(:new_user_path).should == "/#{I18n.t :users, :scope => :resources}/#{I18n.t :new, :scope => :'path_names'}"
+    end
+    
+  end
+
   # context "just output" do
   #   it "output all routes properly" do
   #     nested_routes.keys.collect(&:to_s).sort.each do |k|

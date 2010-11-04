@@ -44,7 +44,7 @@ module I18nRouting
             
             resource = resource_from_params(type, r, opts.dup)
 
-            res = ["#{locale}_#{r}".to_sym, opts]
+            res = ["#{I18nRouting.locale_escaped(locale)}_#{r}".to_sym, opts]
 
             constraints = opts[:constraints] ? opts[:constraints].dup : {}
             constraints[:i18n_locale] = locale.to_s
@@ -304,7 +304,7 @@ module I18nRouting
       # If a translated path exists, set localized infos
       if @localized_path and @localized_path != @path
         #@options[:controller] ||= @options[:as]
-        @options[:as] = "#{locale}_#{@options[:as]}"
+        @options[:as] = "#{I18nRouting.locale_escaped(locale)}_#{@options[:as]}"
         @path = @localized_path
         @options[:constraints] = @options[:constraints] ? @options[:constraints].dup : {}
         @options[:constraints][:i18n_locale] = locale.to_s
@@ -348,7 +348,7 @@ module I18nRouting
           alias_method :localized_#{selector}, :#{selector}
 
           def #{selector}(*args)
-            selector_g = '#{rlang}'.gsub('glang', I18n.locale.to_s).to_sym
+            selector_g = '#{rlang}'.gsub('glang', I18nRouting.locale_escaped(I18n.locale.to_s)).to_sym
 
             #puts "Call routes : #{selector} => \#{selector_g} (\#{I18n.locale}) "
             if respond_to? selector_g and selector_g != :#{selector}
