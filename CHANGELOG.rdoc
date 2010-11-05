@@ -1,3 +1,7 @@
+0.4.5 (November 04, 2010)
+
+* Fixing Rails 3 scope bug with missing / and no translations
+
 0.4.4 (November 03, 2010)
 
 * Fix bug with locale with a dash like pt-br
