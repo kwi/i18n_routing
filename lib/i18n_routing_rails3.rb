@@ -296,10 +296,9 @@ module I18nRouting
       ts.gsub!('(.:format)', '')
       
       tp = @options[:as] && I18nRouting.translation_for(@options[:as], :named_routes) || 
-          !ts.blank? && I18nRouting.translation_for(ts, :named_routes_path) || ''
-        
+          !ts.blank? && I18nRouting.translation_for(ts, :named_routes_path) || ts
       
-      @localized_path = (@scope[:path] || '/') + tp
+      @localized_path = File.join((@scope[:path] || ''), tp).gsub(/\/$/, '')
 
       # If a translated path exists, set localized infos
       if @localized_path and @localized_path != @path

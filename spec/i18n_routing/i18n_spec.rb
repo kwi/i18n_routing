@@ -40,7 +40,12 @@ describe :localized_routes do
               end
             end
             
-            map.localized_root '/', :controller => "about", :action => "show", :path_prefix => ':locale'
+            map.with_options :path_prefix => ':locale' do |l|
+              l.localized_root '/', :controller => "about", :action => "show"
+              l.about_with_locale 'about', :controller => "about", :action => "show"
+              l.about_with_locale_with_sep 'about', :controller => "about", :action => "show"
+            end
+            
             map.resources :drones, :path_prefix => 'doubledrones/unimatrix/zero'
           end
         end
@@ -65,6 +70,8 @@ describe :localized_routes do
 
             scope '/:locale', :constraints => { :locale => /[a-z]{2}/ } do
               match '/' => "about#show", :as => :localized_root
+              match 'about' => "about#show", :as => :about_with_locale
+              match '/about' => "about#show", :as => :about_with_locale_with_sep
             end
 
             resources :users do
@@ -167,6 +174,15 @@ describe :localized_routes do
     it "single resource should have by default the pluralized controller" do
       nested_routes[:foo].defaults[:controller].should == 'foos'
     end
+    
+    it "scope with parameters should be respected" do
+      routes.send(:localized_root_path, I18n.locale).should == "/#{I18n.locale}"
+    end
+
+    it "scope with parameters should be respected when filled" do
+      routes.send(:about_with_locale_path, I18n.locale).should == "/#{I18n.locale}/about"
+      routes.send(:about_with_locale_with_sep_path, I18n.locale).should == "/#{I18n.locale}/about"
+    end
 
   end
 
@@ -178,6 +194,11 @@ describe :localized_routes do
     
     it "scope with parameters should be respected" do
       routes.send(:localized_root_path, I18n.locale).should == "/#{I18n.locale}"
+    end
+
+    it "scope with parameters should be respected when filled" do
+      routes.send(:about_with_locale_path, I18n.locale).should == "/#{I18n.locale}/#{I18n.t :about, :scope => :named_routes_path}"
+      routes.send(:about_with_locale_with_sep_path, I18n.locale).should == "/#{I18n.locale}/#{I18n.t :about, :scope => :named_routes_path}"
     end
 
     it "named_route generates route using localized values" do
