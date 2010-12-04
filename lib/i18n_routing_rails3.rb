@@ -153,7 +153,6 @@ module I18nRouting
         @i18n_routing_path_set = true
       end
       
-      
       old_value = @locales
       @locales = locales
       @i18n_verbose ||= opts.delete(:verbose)
@@ -233,7 +232,6 @@ module I18nRouting
       end
       
       @scope[:nested_deep].pop
-
     end
     
     # Alias methods in order to handle i18n routes
@@ -246,7 +244,6 @@ module I18nRouting
       [:map_method, :member, :collection].each do |m|
         rfname = "#{m}_without_i18n_routing".to_sym
         mod.send :define_method, "#{m}_with_i18n_routing".to_sym do |*args, &block|
-      
           if @localized_branch and @scope[:i18n_scope_level_resource] and @scope[:i18n_real_resource_name]
             o = @scope[:scope_level_resource]
             @scope[:scope_level_resource] = @scope[:i18n_scope_level_resource]
@@ -265,7 +262,6 @@ module I18nRouting
           end
       
           send(rfname, *args, &block)
-          
         end
       
         mod.send :alias_method_chain, m, :i18n_routing
@@ -279,12 +275,10 @@ module I18nRouting
     def resources_with_i18n_routing(*resources, &block)
       create_globalized_resources(:resources, *resources, &block)
     end
-
   end
 
   # Used for localize simple named routes
   class LocalizedMapping < ActionDispatch::Routing::Mapper::Mapping
-
     attr_reader :path
 
     def initialize(locale, set, scope, path, options)
@@ -311,18 +305,15 @@ module I18nRouting
       else
         @localized_path = nil
       end
-
     end
 
     # Return true if this route is localizable
     def localizable?
       @localized_path != nil
     end
-
   end
 
   module NamedRouteCollection
-
     attr_reader :localizable
 
     def set_localizable_route(localizable)
@@ -366,7 +357,6 @@ module I18nRouting
   # Rack::Mount::Route module
   # Exists in order to use apropriate localized route when using url_for
   module RackMountRoute
-    
     # Alias methods in order to handle i18n routes
     def self.included(mod)
       mod.send :alias_method_chain, :generate, :i18n_routing
@@ -387,7 +377,6 @@ module I18nRouting
       return nil if @locale and @locale != I18n.locale.to_sym
       generate_without_i18n_routing(method, params, recall, options)
     end
-
   end
 end
 

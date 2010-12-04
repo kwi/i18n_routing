@@ -8,7 +8,6 @@
 module ActionController
   module Routing
     class Route #:nodoc:
-
       alias_method :mkd_initialize, :initialize
       def initialize(segments = [], requirements = {}, conditions = {})
         @glang = requirements.delete(:glang)
@@ -33,7 +32,6 @@ end
 module ActionController
   module Routing
     class RouteSet #:nodoc:
-
       attr :locales, true
       attr :i18n_verbose, true
 
@@ -46,11 +44,9 @@ module ActionController
         ensure
           @set.locales = old_value
         end
-
       end
 
       class NamedRouteCollection #:nodoc:
-
         alias_method :mkd_define_url_helper, :define_url_helper
         def define_url_helper(route, name, kind, options)
           gl = Thread.current[:globalized]
@@ -85,7 +81,6 @@ module ActionController
               end
               protected :gl#{selector}
             end_eval
-
           end
         end
       end
@@ -115,7 +110,6 @@ module ActionController
 
         gl_add_named_route(name, path, options)
       end
-
     end
   end
 end
@@ -155,7 +149,6 @@ module ActionController
     end
 
     def create_globalized_resources(type, namespace, *entities, &block)
-
       Thread.current[:i18n_nested_deep] ||= 0
       Thread.current[:i18n_nested_deep] += 1
 
