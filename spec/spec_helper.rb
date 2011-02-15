@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'spec'
+require 'rspec'
 
 $rails_version = ARGV.find { |e| e =~ /rails_spec_version=.*/ }.split('=').last.to_i rescue nil
 

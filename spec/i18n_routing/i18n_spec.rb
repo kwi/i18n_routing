@@ -17,6 +17,7 @@ describe :localized_routes do
           map.localized(I18n.available_locales, :verbose => false) do
             map.about 'about', :controller => 'about', :action => :show
             map.welcome 'welcome/to/our/page', :controller => :welcome, :action => :index
+            map.empty 'empty', :controller => 'empty', :action => :show
             
             map.resources :users, :member => {:level => :get, :one => :get, :two => :get}, :collection => {:groups => :get}
             map.resource  :contact
@@ -24,6 +25,8 @@ describe :localized_routes do
             map.resources :authors do |m|
               m.resources :books
             end
+            
+            map.resources :empty_resources
             
             map.resource :foo do |m|
               m.resources :bars
@@ -62,13 +65,15 @@ describe :localized_routes do
         $r.draw do
           match 'not_about' => "not_about#show", :as => :not_about
           resources :not_users
+          resources :empty_resources
           resource  :not_contact
 
-          localized(I18n.available_locales, :verbose => false) do
+          localized(I18n.available_locales, :verbose => true) do
             match 'about' => "about#show", :as => :about
             match 'welcome/to/our/page' => "welcome#index", :as => :welcome
+            match 'empty' => 'empty#show', :as => :empty
 
-            scope '/:locale', :constraints => { :locale => /[a-z]{2}/ } do
+            scope '/:locale' do #, :constraints => { :locale => /[a-z]{2}/ } do ### Commented => this constraint fail on rails 3.0.4 ??
               match '/' => "about#show", :as => :localized_root
               match 'about' => "about#show", :as => :about_with_locale
               match '/about' => "about#show", :as => :about_with_locale_with_sep
@@ -214,6 +219,13 @@ describe :localized_routes do
     it "named_route generates route from route path when route name  not available" do
       routes.send(:welcome_path).should == "/#{I18n.t 'welcome/to/our/page', :scope => :named_routes_path}"
     end 
+    
+    it "doesn't translate empty route" do
+      routes.send(:empty_path).should_not == "/#{I18n.t 'empty', :scope => :named_routes_path}"
+      routes.send(:empty_path).should == "/empty"
+      routes.send(:empty_resources_path).should_not == "/#{I18n.t 'empty', :scope => :named_routes_path}"
+      routes.send(:empty_resources_path).should == "/empty_resources"
+    end
 
     it "named_route generates route using localized values and I18n.locale as a string" do
       o = I18n.locale

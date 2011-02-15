@@ -1,16 +1,16 @@
 require 'rubygems'
 require 'rake'
-require 'spec/rake/spectask'
+require 'rspec/core/rake_task'
 
-spec_files = Rake::FileList["spec/**/*_spec.rb"]
-
+# Now using RSpec 2
 
 desc "Run specs for current Rails version"
-Spec::Rake::SpecTask.new do |t|
-  t.spec_files = spec_files
-  t.spec_opts = lambda {
-    @rails_spec_version ? ["-c --format specdoc -- rails_spec_version=#{@rails_spec_version}"] : ["-c --format specdoc"]
-  }
+RSpec::Core::RakeTask.new do |t|
+  t.pattern = "spec/**/*_spec.rb"
+  t.verbose = true
+  # t.ruby_opts = lambda {
+  #   @rails_spec_version ? ["-c --format specdoc -- rails_spec_version=#{@rails_spec_version}"] : ["-c --format specdoc"]
+  # }
 end
 
 task :default => :spec

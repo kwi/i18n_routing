@@ -100,7 +100,7 @@ module ActionController
             I18n.locale = l
             nt = "#{I18nRouting.locale_escaped(l)}_#{name}"
             t = I18nRouting.translation_for(name, :named_routes) || I18nRouting.translation_for(path, :named_routes_path)
-            if nt != name and t
+            if nt != name and !t.blank?
               gl_add_named_route(nt, t, options.merge(:glang => l))
               puts("[I18n] > localize %-10s: %40s (%s) => %s" % ['route', name, l, t]) if @i18n_verbose
             end
@@ -170,7 +170,7 @@ module ActionController
           locales.each do |l|
             I18n.locale = l
             nt = "#{I18nRouting.locale_escaped(l)}_#{name}"
-            if nt != name and (t = I18nRouting.translation_for(name, namespace))
+            if nt != name and !(t = I18nRouting.translation_for(name, namespace)).blank?
               opts[:as] = t
               opts[:glang] = l
               opts[:controller] ||= name.to_s.pluralize

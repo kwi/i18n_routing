@@ -21,6 +21,7 @@ fr:
     universes: 'univers'
     countries: 'pays'
     bars: bars_fr
+    empty_resources: ''
   resource:
     foo: foo_fr
     foofoo: froufrou
@@ -28,6 +29,7 @@ fr:
   named_routes_path:
     about: 'a-propos'
     'welcome/to/our/page': 'bienvenue/sur/notre/site' # no idea about french translation ;-) --R
+    empty: ''
   path_names:
     new: 'nouveau'
     edit: 'edition'
