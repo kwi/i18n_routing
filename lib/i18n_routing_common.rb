@@ -8,7 +8,6 @@ module I18nRouting
   
   # Return the correct translation for given values
   def self.translation_for(name, type = :resources, option = nil)
-
     # First, if an option is given, try to get the translation in the routes scope
     if option
       default = "{option}Noi18nRoutingTranslation"
@@ -50,5 +49,4 @@ module I18nRouting
 
     return h
   end
-
 end
