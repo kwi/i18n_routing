@@ -47,6 +47,7 @@ describe :localized_routes do
               l.localized_root '/', :controller => "about", :action => "show"
               l.about_with_locale 'about', :controller => "about", :action => "show"
               l.about_with_locale_with_sep 'about', :controller => "about", :action => "show"
+              l.resources :empty__resources
             end
             
             map.resources :drones, :path_prefix => 'doubledrones/unimatrix/zero'
@@ -73,10 +74,11 @@ describe :localized_routes do
             match 'welcome/to/our/page' => "welcome#index", :as => :welcome
             match 'empty' => 'empty#show', :as => :empty
 
-            scope '/:locale' do #, :constraints => { :locale => /[a-z]{2}/ } do ### Commented => this constraint fail on rails 3.0.4 ??
+            scope '/:locale', :constraints => { :locale => /[a-z]{2}/ } do ### this constraint fail on rails 3.0.4, so I had to hack a turn around
               match '/' => "about#show", :as => :localized_root
               match 'about' => "about#show", :as => :about_with_locale
               match '/about' => "about#show", :as => :about_with_locale_with_sep
+              resources :empty__resources
             end
 
             resources :users do
@@ -225,6 +227,8 @@ describe :localized_routes do
       routes.send(:empty_path).should == "/empty"
       routes.send(:empty_resources_path).should_not == "/#{I18n.t 'empty', :scope => :named_routes_path}"
       routes.send(:empty_resources_path).should == "/empty_resources"
+      nested_routes.keys.include?(:fr_empty__resources).should == false # Because translation is empty
+      nested_routes.keys.include?('fr_empty__resources').should == false # Because translation is empty
     end
 
     it "named_route generates route using localized values and I18n.locale as a string" do

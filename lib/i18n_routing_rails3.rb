@@ -36,7 +36,7 @@ module I18nRouting
           localized_path = I18nRouting.translation_for(resource.name, type)
 
           # A translated route exists :
-          if localized_path and String === localized_path
+          if !localized_path.blank? and String === localized_path
             puts("[I18n] > localize %-10s: %40s (%s) => /%s" % [type, resource.name, locale, localized_path]) if @i18n_verbose
             opts = options.dup
             opts[:path] = localized_path
@@ -118,10 +118,12 @@ module I18nRouting
     def initialize(*args)
       super
 
-      # Add i18n as valid conditions for Rack::Mount
+      # Add i18n_locale as valid conditions for Rack::Mount / And add also :locale, as Rails 3.0.4 removed it ...
       @valid_conditions = @set.instance_eval { @set }.instance_eval { @valid_conditions }
-      @valid_conditions << :i18n_locale if !@valid_conditions.include?(:i18n_locale)
-      @set.valid_conditions << :i18n_locale if !@set.valid_conditions.include?(:i18n_locale)
+      [:i18n_locale, :locale].each do |k|
+        @valid_conditions << k if !@valid_conditions.include?(k)
+        @set.valid_conditions << k if !@set.valid_conditions.include?(k)
+      end
 
       # Extends the current RouteSet in order to define localized helper for named routes
       # When calling define_url_helper, it calls define_localized_url_helper too.
@@ -302,6 +304,8 @@ module I18nRouting
         @options[:constraints] = @options[:constraints] ? @options[:constraints].dup : {}
         @options[:constraints][:i18n_locale] = locale.to_s
         @options[:anchor] = true
+        # Force the recomputation of the requirements with the new values
+        @requirements = nil
       else
         @localized_path = nil
       end

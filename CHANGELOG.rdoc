@@ -1,3 +1,10 @@
+0.4.7 (February 14, 2011)
+
+* Fix bug in empty translation handling
+* Hack Rack::Mount to handle :locale constraints in top of i18n_locale
+* Fix requirements bug introduced by Rails 3.0.4
+* Add Gemfile with bundler for easy spec on different rails versions
+
 0.4.6 (February 14, 2011)
 
 * Handle empty translation
