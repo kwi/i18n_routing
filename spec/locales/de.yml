@@ -1,0 +1,5 @@
+de:
+  resources:
+    german: 'deutsche'
+  named_routes_path:
+    sausage: 'bratwurst'
