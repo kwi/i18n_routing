@@ -371,7 +371,7 @@ describe :localized_routes do
     before do
       I18n.locale = 'de'
 
-      it "should translate the routes too" do
+      it "should translate the scope too" do
         routes.send(:german_sausage).should == "/#{I18n.t :german, :scope => :resource}/#{I18n.t :sausage, :scope => :resource}"
       end
     end
