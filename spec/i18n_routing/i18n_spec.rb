@@ -101,6 +101,10 @@ describe :localized_routes do
               end
             end
 
+            scope "german" do
+              match "/sausage" => "meal#show", :as => :german_sausage
+            end
+
             resources :universes do
               resources :galaxies do
                 resources :planets do
@@ -360,6 +364,17 @@ describe :localized_routes do
       nested_routes.keys.should_not include(:fr_author_books) # Do not want fr_author_books
     end    
 
+  end
+
+  context 'routes with scope' do
+
+    before do
+      I18n.locale = 'de'
+
+      it "should translate the scope too" do
+        routes.send(:german_sausage).should == "/#{I18n.t :german, :scope => :resource}/#{I18n.t :sausage, :scope => :resource}"
+      end
+    end
   end
 
   context 'locale with a dash (pt-br)' do
