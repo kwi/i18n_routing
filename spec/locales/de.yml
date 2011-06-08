@@ -1,5 +1,5 @@
 de:
-  resources:
+  scopes:
     german: 'deutsche'
   named_routes_path:
     sausage: 'bratwurst'

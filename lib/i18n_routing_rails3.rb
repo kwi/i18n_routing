@@ -294,7 +294,7 @@ module I18nRouting
       tp = @options[:as] && I18nRouting.translation_for(@options[:as], :named_routes) || 
           !ts.blank? && I18nRouting.translation_for(ts, :named_routes_path) || ts
       
-      localized_scope = I18nRouting.translation_for(@scope[:path].gsub(/\//, '')) if @scope[:path]
+      localized_scope = I18nRouting.translation_for(@scope[:path].gsub(/\//, ''), :scopes) if @scope[:path]
       path = localized_scope ? '/' << localized_scope : @scope[:path]
       @localized_path = File.join((path || ''), tp).gsub(/\/$/, '')
 

@@ -103,6 +103,9 @@ describe :localized_routes do
 
             scope "german" do
               match "/sausage" => "meal#show", :as => :german_sausage
+              resources :weshs do
+                resources :in_weshs
+              end
             end
 
             resources :universes do
@@ -370,11 +373,22 @@ describe :localized_routes do
 
     before do
       I18n.locale = 'de'
-
-      it "should translate the scope too" do
-        routes.send(:german_sausage).should == "/#{I18n.t :german, :scope => :resource}/#{I18n.t :sausage, :scope => :resource}"
-      end
     end
+
+    it "should translate the scope too" do
+      routes.send(:german_sausage_path).should == "/#{I18n.t :german, :scope => :scopes}/#{I18n.t :sausage, :scope => :named_routes_path}"
+      # Scoping is not yet supported on resources ...
+      #routes.send(:weshs_path).should == "/#{I18n.t :german, :scope => :scopes}/weshs"
+    end
+
+    it "should translate the scope too and even in french!" do
+      I18n.locale = 'fr'
+      routes.send(:german_sausage_path).should == "/#{I18n.t :german, :scope => :scopes}/#{I18n.t :sausage, :scope => :named_routes_path}"
+      # Scoping is not yet supported on resources ...
+      #routes.send(:weshs_path).should == "/#{I18n.t :german, :scope => :scopes}/#{I18n.t :weshs, :scope => :resources}"
+      #routes.send(:wesh_in_wesh_path).should == "/#{I18n.t :german, :scope => :scopes}/#{I18n.t :weshs, :scope => :resources}/#{I18n.t :in_weshs, :scope => :resources}"
+    end
+    
   end
 
   context 'locale with a dash (pt-br)' do

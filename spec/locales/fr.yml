@@ -23,14 +23,19 @@ fr:
     bars: bars_fr
     empty_resources: ''
     empty__resources: ''
+    weshs: 'fr_weshs'
+    in_weshs: 'fr_in_weshs'
   resource:
     foo: foo_fr
     foofoo: froufrou
     contact: 'contactez-nous'
+  scopes:
+    german: 'allemand'
   named_routes_path:
     about: 'a-propos'
     'welcome/to/our/page': 'bienvenue/sur/notre/site' # no idea about french translation ;-) --R
     empty: ''
+    sausage: 'saucisse'
   path_names:
     new: 'nouveau'
     edit: 'edition'
