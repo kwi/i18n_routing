@@ -369,26 +369,28 @@ describe :localized_routes do
 
   end
 
-  context 'routes with scope' do
+  if rails3?
+    context 'routes with scope' do
 
-    before do
-      I18n.locale = 'de'
-    end
+      before do
+        I18n.locale = 'de'
+      end
 
-    it "should translate the scope too" do
-      routes.send(:german_sausage_path).should == "/#{I18n.t :german, :scope => :scopes}/#{I18n.t :sausage, :scope => :named_routes_path}"
-      # Scoping is not yet supported on resources ...
-      #routes.send(:weshs_path).should == "/#{I18n.t :german, :scope => :scopes}/weshs"
-    end
+      it "should translate the scope too" do
+        routes.send(:german_sausage_path).should == "/#{I18n.t :german, :scope => :scopes}/#{I18n.t :sausage, :scope => :named_routes_path}"
+        # Scoping is not yet supported on resources ...
+        #routes.send(:weshs_path).should == "/#{I18n.t :german, :scope => :scopes}/weshs"
+      end
 
-    it "should translate the scope too and even in french!" do
-      I18n.locale = 'fr'
-      routes.send(:german_sausage_path).should == "/#{I18n.t :german, :scope => :scopes}/#{I18n.t :sausage, :scope => :named_routes_path}"
-      # Scoping is not yet supported on resources ...
-      #routes.send(:weshs_path).should == "/#{I18n.t :german, :scope => :scopes}/#{I18n.t :weshs, :scope => :resources}"
-      #routes.send(:wesh_in_wesh_path).should == "/#{I18n.t :german, :scope => :scopes}/#{I18n.t :weshs, :scope => :resources}/#{I18n.t :in_weshs, :scope => :resources}"
-    end
+      it "should translate the scope too and even in french!" do
+        I18n.locale = 'fr'
+        routes.send(:german_sausage_path).should == "/#{I18n.t :german, :scope => :scopes}/#{I18n.t :sausage, :scope => :named_routes_path}"
+        # Scoping is not yet supported on resources ...
+        #routes.send(:weshs_path).should == "/#{I18n.t :german, :scope => :scopes}/#{I18n.t :weshs, :scope => :resources}"
+        #routes.send(:wesh_in_wesh_path).should == "/#{I18n.t :german, :scope => :scopes}/#{I18n.t :weshs, :scope => :resources}/#{I18n.t :in_weshs, :scope => :resources}"
+      end
     
+    end
   end
 
   context 'locale with a dash (pt-br)' do

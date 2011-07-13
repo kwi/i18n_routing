@@ -115,8 +115,8 @@ module I18nRouting
 
     # On Routing::Mapper initialization (when doing Application.routes.draw do ...)
     # prepare routing system to be i18n ready
-    def initialize(*args)
-      super
+    def initialize_with_i18n_routing(*args)
+      initialize_without_i18n_routing(*args)
 
       # Add i18n_locale as valid conditions for Rack::Mount / And add also :locale, as Rails 3.0.4 removed it ...
       @valid_conditions = @set.instance_eval { @set }.instance_eval { @valid_conditions }
@@ -238,6 +238,7 @@ module I18nRouting
     
     # Alias methods in order to handle i18n routes
     def self.included(mod)
+      mod.send :alias_method_chain, :initialize, :i18n_routing
       mod.send :alias_method_chain, :resource, :i18n_routing
       mod.send :alias_method_chain, :resources, :i18n_routing
       
@@ -372,7 +373,13 @@ module I18nRouting
     # During route initialization, if a condition i18n_locale is present
     # Delete it, and store it in @locale
     def initialize_with_i18n_routing(app, conditions, defaults, name)
-      @locale = conditions[:i18n_locale] ? conditions.delete(:i18n_locale).source.to_sym : nil
+      @locale = if conditions.key?(:i18n_locale)
+        c = conditions.delete(:i18n_locale)
+        # In rails 3.0 it's a regexp otherwise it's a string, so we need to call source on the regexp
+        (c.respond_to?(:source) ? c.source : c).to_sym
+      else
+        nil
+      end
       initialize_without_i18n_routing(app, conditions, defaults, name)
     end
 
