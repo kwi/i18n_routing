@@ -31,6 +31,7 @@ module I18nRouting
         resource = resource_from_params(type, r, options.dup)
 
         # Check for translated resource
+        stored_locale = I18n.locale
         @locales.each do |locale|
           I18n.locale = locale
           localized_path = I18nRouting.translation_for(resource.name, type)
@@ -82,6 +83,7 @@ module I18nRouting
             localizable_route = resource
           end
         end
+        I18n.locale = stored_locale
       end
       return localizable_route
     end
@@ -286,6 +288,7 @@ module I18nRouting
 
     def initialize(locale, set, scope, path, options)
       super(set, scope, path.clone, options ? options.clone : nil)
+      stored_locale = I18n.locale
 
       # try to get translated path :
       I18n.locale = locale
@@ -312,6 +315,7 @@ module I18nRouting
       else
         @localized_path = nil
       end
+      I18n.locale = stored_locale
     end
 
     # Return true if this route is localizable
