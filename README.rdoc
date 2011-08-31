@@ -9,7 +9,7 @@ For any question, use the i18_routing google group: http://groups.google.com/gro
 Works with Rails 2.3 and Rails 3.0
 => Rails3 beta and RC versions are no longer supported !
 
-== Routes recognition
+== IT House routing locale recognition
   
 You can access current path locale through request.env["routing-locale"] and set it to I18n.locale.
   class ApplicationControll < ActionController::Base
