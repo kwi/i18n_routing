@@ -1,0 +1,32 @@
+= I18nRouting
+
+I18n_routing is a plugin for Ruby on Rails that lets you easily translate your routes trough the I18n api included in Rails since version 2.2
+
+All necessary informations are available on the wiki: http://wiki.github.com/kwi/i18n_routing
+
+For any question, use the i18_routing google group: http://groups.google.com/group/i18n-routing
+
+Works with Rails 2.3 and Rails 3.0
+=> Rails3 beta and RC versions are no longer supported !
+
+== TODO for next releases (written the 9th of June)
+
+* Handle multiple translations for same resources name (Example: nested and not nested resources)
+* Handle namespace translation (and path_prefix on Rails3)
+
+== I18n gem version warning
+
+Be careful when running Rails 2.3 with the shipped i18n gem: this is an old i18n version and i18_routing will install the latest i18n version as a gem.
+This latest version may be incompatible with some old usages.
+Furthermore, if the i18n gem is present on your system, Rails will load it and skip the shipped version; Keep that in mind.
+
+== Contributors
+
+* kwi (Guillaume Luccisano)
+* bigtiger (Jim Remsik)
+* mixr (Reiner Dieterich)
+* fwalch
+* doubledrones: h13ronim (Marcin Michałowski)
+* rudionrails (Rudolf Schmidt)
+
+Copyright (c) 2010 Guillaume Luccisano - g-mai|: guillaume.luccisano, released under the MIT license

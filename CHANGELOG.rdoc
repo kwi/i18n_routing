@@ -1,0 +1,99 @@
+0.4.7 (February 14, 2011)
+
+* Fix bug in empty translation handling
+* Hack Rack::Mount to handle :locale constraints in top of i18n_locale
+* Fix requirements bug introduced by Rails 3.0.4
+* Add Gemfile with bundler for easy spec on different rails versions
+
+0.4.6 (February 14, 2011)
+
+* Handle empty translation
+
+0.4.5 (November 04, 2010)
+
+* Fixing Rails 3 scope bug with missing / and no translations
+
+0.4.4 (November 03, 2010)
+
+* Fix bug with locale with a dash like pt-br
+
+0.4.3 (October 10, 2010)
+
+* Named route can be translated by name or by path
+
+0.4.2 (September 20, 2010)
+
+* Fix a Rails3 bug, enabling again to do things like that: get :one, :two, :three
+
+0.4.1 (September 11, 2010)
+
+* Fix a Rails3 bug for named routes and prefixed path
+
+0.4.0 (September 08, 2010)
+
+* Full support for Rails 3.0.0
+
+0.3.8 (August 30, 2010)
+
+* Support the first Rails3 official release (but nested resources is still broken)
+
+0.3.7 (August 26, 2010)
+
+* Support Rails3 RC2 thanks to fwalch / Rails3 final will probably require a new version of i18n_routing
+* Not everything works on RC2 (nested resources), will be fixed when Rails3 will be officially released.
+
+0.3.6 (June 13, 2010)
+
+* Works even if translations are the same as the translated name
+
+0.3.5 (June 9, 2010)
+
+* Clean up some .to_sym in order to avoid unnecessary symbols during runtime
+* Works with both I18n.locale as string or as symbol
+* Try to fix a Pathname instead of string issue
+
+0.3.4 (June 3, 2010)
+
+* Fix Rails3 issue with nested single resource again and pluralize controller name as it should be
+
+0.3.3 (June 2, 2010)
+
+* Fix Rails3 issue with nested single resource
+
+0.3.2 (June 2, 2010)
+
+* Add automatically config/locales/*.yml in the i18n load path in order to fix Rails3 issue
+
+0.3.1 (May 27, 2010)
+
+* Add a small Rails3 verification
+
+0.3.0 (May 27, 2010)
+
+* Add support for translating path_names, member and collection
+* Fix Rails3 nested resources
+* All specs are now passing under both Rails 2.3.5 and Rails 3
+
+0.2.4 (Apr 21, 2010)
+
+* Fix latest Rails3 edge compatibility (previous rails3 beta version not supported any more)
+
+0.2.3 (Apr 21, 2010)
+
+* Works on ruby 1.9.2-head
+
+0.2.2 (Apr 21, 2010)
+
+* Add I18n gem dependency
+
+0.2.1 (Apr 09, 2010)
+
+* Minor Rails3 modification, added gemspec and pushed gem on gemcutter
+
+0.2.0 (Apr 07, 2010)
+
+* All specs pass for Rails2, including nested deep resources
+
+0.1.0 (Mar 22, 2010)
+
+* Initial release
