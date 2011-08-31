@@ -12,7 +12,7 @@ Works with Rails 2.3 and Rails 3.0
 == IT House routing locale recognition
   
 You can access current path locale through request.env["routing-locale"] and set it to I18n.locale.
-  class ApplicationControll < ActionController::Base
+  class ApplicationController < ActionController::Base
     before_filter :set_i18n_locale
 
     def set_i18n_locale
