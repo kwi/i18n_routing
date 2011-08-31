@@ -14,9 +14,15 @@ Works with Rails 2.3 and Rails 3.0
 You can access current path locale through request.env["routing-locale"] and set it to I18n.locale.
   class ApplicationController < ActionController::Base
     before_filter :set_i18n_locale
+    # to switch back to default locale
+    after_filter :reset_i18n_locale
 
     def set_i18n_locale
       I18n.locale = request.env["routing-locale"] if I18n.available_locales.include?(request.env["routing-locale"].to_sym)
+    end
+
+    def reset_i18n_locale
+      I18n.locale = I18n.default_locale
     end
   end
 
