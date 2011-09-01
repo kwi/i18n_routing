@@ -16,9 +16,38 @@ class I18nRoutingConstraints
     @hsh[key]
   end
 
+  def args_matches?(request)
+    @hsh.each do |key,value|
+      result = false
+      unless key == :i18n_locale
+        given_value = if request.params.has_key?(key)
+          request.params[key]
+        elsif request.respond_to?(key)
+          request.send(key)
+        end
+
+        result = if given_value
+          if value.is_a?(Regexp)
+            given_value.match(value)
+          else
+            given_value == value
+          end
+        end
+      else
+        result = true
+      end
+      return false unless result
+    end
+    return true
+  end
+
   def matches?(request)
-    request.env["routing-locale"] = @hsh[:i18n_locale]
-    true
+    if args_matches?(request)
+      request.env["routing-locale"] = @hsh[:i18n_locale]
+      true
+    else
+      false
+    end
   end
 end
 
@@ -64,7 +93,6 @@ module I18nRouting
             resource = resource_from_params(type, r, opts.dup)
 
             res = ["#{I18nRouting.locale_escaped(locale)}_#{r}".to_sym, opts]
-
             constraints = if opts[:constraints].is_a?(Hash)
               ::I18nRoutingConstraints.new(opts[:constraints].dup)
             else
@@ -327,7 +355,11 @@ module I18nRouting
         #@options[:controller] ||= @options[:as]
         @options[:as] = "#{I18nRouting.locale_escaped(locale)}_#{@options[:as]}"
         @path = @localized_path
-        @options[:constraints] = @options[:constraints] ? @options[:constraints].dup : {}
+        @options[:constraints] = if @options[:constraints].is_a?(Hash)
+          ::I18nRoutingConstraints.new(@options[:constraints].dup)
+        else
+          ::I18nRoutingConstraints.new()
+        end
         @options[:constraints][:i18n_locale] = locale.to_s
         @options[:anchor] = true
         # Force the recomputation of the requirements with the new values
