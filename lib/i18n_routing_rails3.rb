@@ -182,24 +182,44 @@ module I18nRouting
       yield
       @skip_localization = old
     end
-    
+
+
+
+    # Overrides match method
+    # Two variants of match are supported now
+    #   match 'about' => 'pages#about', :as => 'about'
+    #   match 'about', :to => 'pages#about'
+    #   match 'home', :to => 'pages#home', :as => 'main' # Route name overridden to 'main'
     def match(*args)
       # Localize simple match only if there is no resource scope.
-      if args.size == 1 and @locales and !parent_resource and args.last.is_a?(Hash) and args.first[:as]
-        options = Marshal.load(Marshal.dump(args.first)) # Dump is dirty but how to make deep cloning easily ? :/
-        path, to = options.find { |name, value| name.is_a?(String) }
-        options.merge!(:to => to).delete(path)        
-        @locales.each do |locale|
-          mapping = LocalizedMapping.new(locale, @set, @scope, path, options)
-          if mapping.localizable?
-            puts("[I18n] > localize %-10s: %40s (%s) => %s" % ['route', args.first[:as], locale, mapping.path]) if @i18n_verbose
-            @set.add_route(*mapping.to_route)
-          end
+      if @locales and (args.size >= 1) and !parent_resource and
+             args.last.is_a?(Hash) # In both variants Hash should be present as last parameter
+
+        # Make deep copy of last argument (Hash)
+        options = Marshal.load(Marshal.dump(args.last)) # Dump is dirty but how to make deep cloning easily ? :/
+
+        # Now handle parameters
+        if (args.first.is_a?(Hash))
+          path, to = options.find { |name, value| name.is_a?(String) }
+          options.merge!(:to => to).delete(path)
+        else
+          path = args[0]
+          options[:as] ||= path
         end
-      
-        # Now, create the real match :
-        return set_localizable_route(args.first[:as]) do
-          super
+
+        if (options[:as])
+          @locales.each do |locale|
+            mapping = LocalizedMapping.new(locale, @set, @scope, path, options)
+            if mapping.localizable?
+              puts("[I18n] > localize %-10s: %40s (%s) => %s" % ['route', options[:as], locale, mapping.path]) if @i18n_verbose
+              @set.add_route(*mapping.to_route)
+            end
+          end
+
+          # Now, create the real match :
+          return set_localizable_route(options[:as]) do
+            super
+          end
         end
       end
 

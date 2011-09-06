@@ -33,6 +33,8 @@ fr:
     german: 'allemand'
   named_routes_path:
     about: 'a-propos'
+    about2: 'a-propos2'
+    home: 'accueil'
     'welcome/to/our/page': 'bienvenue/sur/notre/site' # no idea about french translation ;-) --R
     empty: ''
     sausage: 'saucisse'
