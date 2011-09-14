@@ -91,6 +91,7 @@ module ActionController
           # Here, try to translate standard named routes
           name = name.to_s
 
+          stored_locale = I18n.locale
           @locales.each do |l|
             I18n.locale = l
             nt = "#{I18nRouting.locale_escaped(l)}_#{name}"
@@ -100,6 +101,7 @@ module ActionController
               puts("[I18n] > localize %-10s: %40s (%s) => %s" % ['route', name, l, t]) if @i18n_verbose
             end
           end
+          I18n.locale = stored_locale
 
           old_v = Thread.current[:globalized]
           Thread.current[:globalized] = true
@@ -160,6 +162,7 @@ module ActionController
 
         locales = @set.locales
         localized(nil) do
+          stored_locale = I18n.locale
           locales.each do |l|
             I18n.locale = l
             nt = "#{I18nRouting.locale_escaped(l)}_#{name}"
@@ -180,6 +183,8 @@ module ActionController
               puts("[I18n] > localize %-10s: %40s (%s) => %s" % [namespace, nt, l, t]) if @set.i18n_verbose
             end
           end
+          I18n.locale = stored_locale
+
 
           if Thread.current[:i18n_nested_deep] < 2
             switch_no_named_localization(nil) do
