@@ -1,3 +1,8 @@
+0.5.0 (September 13, 2011)
+
+* Fixed a bug where i18n_routing was not restoring the default locale at boot (fishman)
+* Handling of the rails3 alternative match syntax (toXXlc)
+
 0.4.7 (February 14, 2011)
 
 * Fix bug in empty translation handling
