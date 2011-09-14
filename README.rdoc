@@ -9,6 +9,23 @@ For any question, use the i18_routing google group: http://groups.google.com/gro
 Works with Rails 2.3 and Rails 3.0
 => Rails3 beta and RC versions are no longer supported !
 
+== IT House routing locale recognition
+  
+You can access current path locale through request.env["routing-locale"] and set it to I18n.locale.
+  class ApplicationController < ActionController::Base
+    before_filter :set_i18n_locale
+    # to switch back to default locale
+    after_filter :reset_i18n_locale
+
+    def set_i18n_locale
+      I18n.locale = request.env["routing-locale"] if I18n.available_locales.include?(request.env["routing-locale"].to_sym)
+    end
+
+    def reset_i18n_locale
+      I18n.locale = I18n.default_locale
+    end
+  end
+
 == TODO for next releases (written the 9th of June)
 
 * Handle multiple translations for same resources name (Example: nested and not nested resources)
