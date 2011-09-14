@@ -65,12 +65,19 @@ describe :localized_routes do
         $r = ActionDispatch::Routing::RouteSet.new
         $r.draw do
           match 'not_about' => "not_about#show", :as => :not_about
+          match 'not_about2', :to => "not_about2#show"
+          match 'not_home', :to => 'not_pages#home', :as => 'not_main'
+
           resources :not_users
           resources :empty_resources
           resource  :not_contact
 
           localized(I18n.available_locales, :verbose => true) do
             match 'about' => "about#show", :as => :about
+            match 'about2', :to => "about2#show"
+            match 'home', :to => 'pages#home', :as => 'main'
+
+
             match 'welcome/to/our/page' => "welcome#index", :as => :welcome
             match 'empty' => 'empty#show', :as => :empty
 
@@ -142,6 +149,10 @@ describe :localized_routes do
       routes.send(:not_about_path).should == "/not_about"
     end
 
+    it "of named_routes (another format)" do
+      routes.send(:not_about2_path).should == "/not_about2"
+    end
+
     it "of a singular resource" do
       routes.send(:not_contact_path).should == "/not_contact"
     end
@@ -160,6 +171,8 @@ describe :localized_routes do
 
     it "named_route uses default values" do
       routes.send(:about_path).should == "/about"
+      routes.send(:about2_path).should == "/about2"
+      routes.send(:main_path).should == "/home"
       routes.send(:welcome_path).should == '/welcome/to/our/page'
     end
 
@@ -217,8 +230,11 @@ describe :localized_routes do
 
     it "named_route generates route using localized values" do
       routes.send(:about_path).should == "/#{I18n.t :about, :scope => :named_routes_path}"
+      routes.send(:about2_path).should == "/#{I18n.t :about2, :scope => :named_routes_path}"
+      routes.send(:main_path).should == "/#{I18n.t :home, :scope => :named_routes_path}"
     end
-    
+
+
     it "named_route generated route from actual route name" do
       I18n.locale = :en
       routes.send(:welcome_path).should == "/#{I18n.t :welcome, :scope => :named_routes}"        
@@ -242,8 +258,11 @@ describe :localized_routes do
       o = I18n.locale
       I18n.locale = "fr"
       routes.send(:about_path).should == "/#{I18n.t :about, :scope => :named_routes_path}"
+      routes.send(:about2_path).should == "/#{I18n.t :about2, :scope => :named_routes_path}"
+      routes.send(:main_path).should == "/#{I18n.t :home, :scope => :named_routes_path}"
       I18n.locale = o
     end
+
 
     it "resource generates routes using localized values" do
       routes.send(:contact_path).should == "/#{I18n.t :contact, :scope => :resource}"
@@ -256,6 +275,8 @@ describe :localized_routes do
     it "url_for generates routes using localized values" do
       url_for(:controller => :users).should == "/#{I18n.t :as, :scope => :'routes.users'}"
       url_for(:controller => :about, :action => :show).should == "/#{I18n.t :about, :scope => :named_routes_path}"
+      url_for(:controller => :about2, :action => :show).should == "/#{I18n.t :about2, :scope => :named_routes_path}"
+      url_for(:controller => :pages, :action => :home).should == "/#{I18n.t :home, :scope => :named_routes_path}"
     end
 
     if !rails3?
@@ -409,6 +430,8 @@ describe :localized_routes do
     
     it "named_route generates route using localized values" do
       routes.send(:about_path).should == "/#{I18n.t :about, :scope => :named_routes_path}"
+      routes.send(:about2_path).should == "/#{I18n.t :about2, :scope => :named_routes_path}"
+      routes.send(:main_path).should == "/#{I18n.t :home, :scope => :named_routes_path}"
     end
     
     it "custom translated path names" do

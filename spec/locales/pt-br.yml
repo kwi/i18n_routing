@@ -5,5 +5,7 @@ pt-BR:
     foo: foo_fr-pt-br
   named_routes_path:
     about: 'a-propos-pt-br'
+    about2: 'a-propos-pt-br2'
+    home: 'casa'
   path_names:
     new: 'nouveau-pt-br'

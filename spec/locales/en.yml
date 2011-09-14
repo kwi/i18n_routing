@@ -11,5 +11,7 @@ en:
     contact: 'contact-us'
   named_routes_path:
     about: 'about-our-company'
+    about2: 'about-our-company2'
+    home: 'home'
   named_routes:
     welcome: 'welcome-to-our-page'
