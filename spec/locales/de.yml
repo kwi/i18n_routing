@@ -3,3 +3,7 @@ de:
     german: 'deutsche'
   named_routes_path:
     sausage: 'bratwurst'
+    from_search: "/von/:country/:city"
+    to_search: "/nach/:country/:city"
+    "/from/:country/:city": "/von/:country/:city"
+    "/to/:country/:city": "/nach/:country/:city"

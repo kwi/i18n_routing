@@ -18,6 +18,13 @@ describe :localized_routes do
             map.about 'about', :controller => 'about', :action => :show
             map.welcome 'welcome/to/our/page', :controller => :welcome, :action => :index
             map.empty 'empty', :controller => 'empty', :action => :show
+
+           ['from', 'to'].each do |fromto|
+             controller :search, :action => :show, :type => fromto do
+               map.send "#{fromto}_search", "/#{fromto}/:country/:city"
+             end
+           end
+         
             
             map.resources :users, :member => {:level => :get, :one => :get, :two => :get}, :collection => {:groups => :get}
             map.resource  :contact
@@ -77,6 +84,11 @@ describe :localized_routes do
             match 'about2', :to => "about2#show"
             match 'home', :to => 'pages#home', :as => 'main'
 
+           ['from', 'to'].each do |fromto|
+             controller :search, :action => :show, :type => fromto do
+               match "/#{fromto}/:country/:city", :as => "#{fromto}_search"
+             end
+           end
 
             match 'welcome/to/our/page' => "welcome#index", :as => :welcome
             match 'empty' => 'empty#show', :as => :empty
@@ -217,12 +229,54 @@ describe :localized_routes do
 
   end
 
+
+#           ['from', 'to'].each do |fromto|
+#             controller :search, :action => :show, :type => fromto do
+#               match "/#{fromto}/:country/:city", :as => "#{fromto}_search"
+#             end
+#           end
+  context "routes in loop and controller blocks, " do
+    context "untranslated: " do
+      it "named route, from" do
+        routes.send(:from_search_path, :country => 'DE', :city => 'HH', :type => 'from').should == '/from/DE/HH'
+      end
+      it "named route, to" do
+        routes.send(:to_search_path, :country => 'DE', :city => 'HH', :type => 'to').should == '/to/DE/HH'
+      end
+      it "url_for, from" do
+        url_for(:controller => :search, :action => :show, :country => 'DE', :city => 'HH', :type => 'from').should == '/from/DE/HH'
+      end
+      it "url_for, to" do
+        url_for(:controller => :search, :action => :show, :country => 'DE', :city => 'HH', :type => 'to').should == '/to/DE/HH'
+      end
+    end
+
+    context "translated: " do
+      before do
+       I18n.locale = :de
+      end
+      it "named route, from" do
+        routes.send(:from_search_path, :country => 'DE', :city => 'HH', :type => 'from').should == '/von/DE/HH'
+      end
+      it "named route, to" do
+        routes.send(:to_search_path, :country => 'DE', :city => 'HH', :type => 'to').should == '/nach/DE/HH'
+      end
+      it "url_for, from" do
+        url_for(:controller => :search, :action => :show, :country => 'DE', :city => 'HH', :type => 'from').should == '/von/DE/HH'
+      end
+      it "url_for, to" do
+        url_for(:controller => :search, :action => :show, :country => 'DE', :city => 'HH', :type => 'to').should == '/nach/DE/HH'
+      end
+    end
+  end
+
+
   context "" do
 
     before do
       I18n.locale = :fr
     end
-    
+
     it "scope with parameters should be respected" do
       routes.send(:localized_root_path, I18n.locale).should == "/#{I18n.locale}"
     end
