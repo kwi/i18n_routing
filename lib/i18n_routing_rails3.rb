@@ -213,7 +213,7 @@ module I18nRouting
           @locales.each do |locale|
             mapping = LocalizedMapping.new(locale, @set, @scope, path, options)
             if mapping.localizable?
-              puts("[I18n] > localize %-10s: %40s (%s) => %s" % ['route', options[:as], locale, mapping.path]) if @i18n_verbose
+              puts("[I18n] > localize %-10s: %40s (%5s) => %-40s (%s)" % ['route', options[:as], locale, mapping.path, options[:constraints]]) if @i18n_verbose
               @set.add_route(*mapping.to_route)
             end
           end
