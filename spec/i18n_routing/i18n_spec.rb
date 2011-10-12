@@ -1,5 +1,11 @@
 require 'spec_helper'
 
+class String
+  def str2id
+    Zlib.crc32(self.to_s) % (2**30-1)
+  end
+end
+
 describe :localized_routes do
 
   $r = nil # Global routes in order to speed up testing
@@ -9,6 +15,7 @@ describe :localized_routes do
     if !$r
       if !rails3?
         ActionController::Routing::Routes.clear!
+        ActionDispatch::Routing::SEPARATORS << "-" unless ActionDispatch::Routing::SEPARATORS.include?("-")
         ActionController::Routing::Routes.draw do |map|
           map.not_about 'not_about', :controller => 'not_about'
           map.resources :not_users
@@ -18,6 +25,9 @@ describe :localized_routes do
             map.about 'about', :controller => 'about', :action => :show
             map.welcome 'welcome/to/our/page', :controller => :welcome, :action => :index
             map.empty 'empty', :controller => 'empty', :action => :show
+
+            #map.search_tab_slash "from/:tab/:country/:city", :controller => :search_tab_slash, :action => :show
+            #map.search_tab_dash "from-:tab-:country-:city", :controller => :search_tab_dash, :action => :show
             
             map.resources :users, :member => {:level => :get, :one => :get, :two => :get}, :collection => {:groups => :get}
             map.resource  :contact
@@ -77,6 +87,12 @@ describe :localized_routes do
             match 'about2', :to => "about2#show"
             match 'home', :to => 'pages#home', :as => 'main'
 
+            match "fromxc/:city" => "fromxc_slash#show", :as => "fromxc_slash", :constraints => { :city => /[A-Za-z0-9]{2}/ }
+            match "fromx/:city" => "fromx_slash#show", :as => "fromx_slash"#, :constraints => { :city => /[A-Za-z0-9]{2}/ }
+            match "from/:country/:city" => "search_slash#show", :as => "search_slash"
+            match "from-:country-:city" => "search_dash#show", :as => "search_dash"
+            match "fromc/:country/:city" => "search_slashc#show", :as => "search_slashc", :constraints => { :city => /[A-Za-z0-9]{2}/ }
+            match "fromc-:country-:city" => "search_dashc#show", :as => "search_dashc", :constraints => { :city => /[A-Za-z0-9]{2}/ }
 
             match 'welcome/to/our/page' => "welcome#index", :as => :welcome
             match 'empty' => 'empty#show', :as => :empty
@@ -217,12 +233,68 @@ describe :localized_routes do
 
   end
 
+
+  context "routes with constraints and/or '-' as path separator, " do
+    { "untranslated" => [nil, 'from'], "German" => [:de, 'von'] }.each do |header, data|
+      context "#{header}: " do
+        context "no constraints, " do
+          before do
+           I18n.locale = data[0]
+          end
+          it "simple, named route, '/'" do
+            routes.send(:fromx_slash_path, :city => 'HH').should == "/#{data[1]}x/HH"
+          end
+          it "simple, url_for, '/'" do
+            url_for(:controller => :fromx_slash, :action => :show, :city => 'HH').should == "/#{data[1]}x/HH"
+          end
+          it "named route, '/'" do
+            routes.send(:search_slash_path, :country => 'DE', :city => 'HH').should == "/#{data[1]}/DE/HH"
+          end
+          it "named route, '-'" do
+            routes.send(:search_dash_path, :country => 'DE', :city => 'HH').should == "/#{data[1]}-DE-HH"
+          end
+          it "url_for, '/'" do
+            url_for(:controller => :search_slash, :action => :show, :country => 'DE', :city => 'HH').should == "/#{data[1]}/DE/HH"
+          end
+          it "url_for, '-'" do
+            url_for(:controller => :search_dash, :action => :show, :country => 'DE', :city => 'HH').should == "/#{data[1]}-DE-HH"
+          end
+        end
+        context "with constraints, " do
+          before do
+           I18n.locale = data[0]
+          end
+          it "simple, named route, '/'" do
+            routes.send(:fromxc_slash_path, :city => 'HH').should == "/#{data[1]}xc/HH"
+          end
+          it "simple, url_for, '/'" do
+            url_for(:controller => :fromxc_slash, :action => :show, :city => 'HH').should == "/#{data[1]}xc/HH"
+          end
+          it "named route, '/'" do
+            routes.send(:search_slashc_path, :country => 'DE', :city => 'HH').should == "/#{data[1]}c/DE/HH"
+          end
+          it "named route, '-'" do
+            routes.send(:search_dashc_path, :country => 'DE', :city => 'HH').should == "/#{data[1]}c-DE-HH"
+          end
+          it "url_for, '/'" do
+            url_for(:controller => :search_slashc, :action => :show, :country => 'DE', :city => 'HH').should == "/#{data[1]}c/DE/HH"
+          end
+          it "url_for, '-'" do
+            url_for(:controller => :search_dashc, :action => :show, :country => 'DE', :city => 'HH').should == "/#{data[1]}c-DE-HH"
+          end
+        end
+      end
+    end
+
+  end
+
+
   context "" do
 
     before do
       I18n.locale = :fr
     end
-    
+
     it "scope with parameters should be respected" do
       routes.send(:localized_root_path, I18n.locale).should == "/#{I18n.locale}"
     end
