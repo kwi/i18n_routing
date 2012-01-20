@@ -2,6 +2,8 @@
 
 # I18nRouting module for common usage methods
 module I18nRouting
+    mattr_accessor :i18n_locale_param
+
   def self.locale_escaped(locale)
     locale.to_s.downcase.gsub('-', '_')
   end
@@ -50,3 +52,5 @@ module I18nRouting
     return h
   end
 end
+
+I18nRouting.i18n_locale_param = :i18n_locale
