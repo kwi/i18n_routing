@@ -28,7 +28,11 @@ else
   gem 'actionpack', '> 2.9'
   require 'action_controller'
   require 'action_dispatch'
-  require 'rack/mount'
+  if Rails.version < '3.2'
+    require 'rack/mount'
+  else
+    require 'journey'
+  end
   require 'active_support/core_ext/hash/slice.rb'
 end
 
