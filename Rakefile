@@ -26,3 +26,6 @@ task :rails3_spec do
   @rails_spec_version = 3
   Rake::Task['spec'].invoke
 end
+
+Bundler::GemHelper.install_tasks
+
