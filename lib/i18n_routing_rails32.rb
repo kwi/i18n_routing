@@ -389,15 +389,15 @@ module I18nRouting
   module JourneyRoute
     # Alias methods in order to handle i18n routes
     def self.included(mod)
-      mod.send :alias_method_chain, :format, :i18n_routing
       mod.send :alias_method_chain, :initialize, :i18n_routing
+      mod.send :alias_method_chain, :score, :i18n_routing
     end
 
     # During route initialization, if a condition i18n_locale is present
     # Delete it, store it in @locale, and add it to @defaults
     def initialize_with_i18n_routing(name, app, path, constraints, defaults = {})
       @locale = if constraints.key?(:i18n_locale)
-        c = defaults[:i18n_locale] = constraints.delete(:i18n_locale)
+        c = constraints.delete(:i18n_locale)
         # In rails 3.0 it's a regexp otherwise it's a string, so we need to call source on the regexp
         (c.respond_to?(:source) ? c.source : c).to_sym
       else
@@ -406,30 +406,13 @@ module I18nRouting
       initialize_without_i18n_routing(name, app, path, constraints, defaults)
     end
 
-    # Called for dynamic route generation
-    # If a @locale is present and if this locale is not the current one
-    #  => return nil and refuse to generate the route
-    def format_with_i18n_routing(path_options)
-      return nil if @locale and @locale != I18n.locale.to_sym
-      format_without_i18n_routing(path_options)
-    end
-  end
-
-
-  # Journey::Formatter module
-  # Exists in order to inject the current locale in the routing options
-  module JourneyFormatter
-    def self.included(mod)
-      mod.send :alias_method_chain, :non_recursive, :i18n_routing
-    end
-
-    def non_recursive_with_i18n_routing(cache, options)
-      options << [:i18n_locale, I18n.locale.to_s]
-      non_recursive_without_i18n_routing(cache, options)
+    # Return low score for routes that don't match the current locale
+    def score_with_i18n_routing constraints
+      return -1 if @locale && @locale != I18n.locale.to_sym
+      score_without_i18n_routing constraints
     end
   end
 end
 
 ActionDispatch::Routing::Mapper.send  :include, I18nRouting::Mapper
 Journey::Route.send                   :include, I18nRouting::JourneyRoute
-Journey::Formatter.send               :include, I18nRouting::JourneyFormatter
