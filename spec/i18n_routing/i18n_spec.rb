@@ -3,7 +3,7 @@ require 'spec_helper'
 describe :localized_routes do
 
   $r = nil # Global routes in order to speed up testing
-  
+
   before(:all) do
 
     if !$r
@@ -18,23 +18,23 @@ describe :localized_routes do
             map.about 'about', :controller => 'about', :action => :show
             map.welcome 'welcome/to/our/page', :controller => :welcome, :action => :index
             map.empty 'empty', :controller => 'empty', :action => :show
-            
+
             map.resources :users, :member => {:level => :get, :one => :get, :two => :get}, :collection => {:groups => :get}
             map.resource  :contact
-            
+
             map.resources :authors do |m|
               m.resources :books
             end
-            
+
             map.resources :empty_resources
-            
+
             map.resource :foo do |m|
               m.resources :bars
               m.resource :foofoo do |mm|
                 mm.resources :bars
               end
             end
-            
+
             map.resources :universes do |m|
               m.resources :galaxies do |mm|
                 mm.resources :planets do |mmm|
@@ -42,20 +42,20 @@ describe :localized_routes do
                 end
               end
             end
-            
+
             map.with_options :path_prefix => ':locale' do |l|
               l.localized_root '/', :controller => "about", :action => "show"
               l.about_with_locale 'about', :controller => "about", :action => "show"
               l.about_with_locale_with_sep 'about', :controller => "about", :action => "show"
               l.resources :empty__resources
             end
-            
+
             map.resources :drones, :path_prefix => 'doubledrones/unimatrix/zero'
           end
         end
-      
+
         $r = ActionController::Routing::Routes
-      
+
         class UrlTester
           include ActionController::UrlWriter
         end
@@ -127,7 +127,7 @@ describe :localized_routes do
 
           end
         end
-           
+
         class UrlTester; end
         UrlTester.send :include, $r.url_helpers
 
@@ -201,11 +201,11 @@ describe :localized_routes do
       routes.send(:universe_galaxies_path, 1).should == "/universes/1/galaxies"
       routes.send(:universe_galaxy_planets_path, 1, 1).should == "/universes/1/galaxies/1/planets"
     end
-    
+
     it "single resource should have by default the pluralized controller" do
       nested_routes[:foo].defaults[:controller].should == 'foos'
     end
-    
+
     it "scope with parameters should be respected" do
       routes.send(:localized_root_path, I18n.locale).should == "/#{I18n.locale}"
     end
@@ -222,7 +222,7 @@ describe :localized_routes do
     before do
       I18n.locale = :fr
     end
-    
+
     it "scope with parameters should be respected" do
       routes.send(:localized_root_path, I18n.locale).should == "/#{I18n.locale}"
     end
@@ -243,14 +243,14 @@ describe :localized_routes do
 
     it "named_route generated route from actual route name" do
       I18n.locale = :en
-      routes.send(:welcome_path).should == "/#{I18n.t :welcome, :scope => :named_routes}"        
+      routes.send(:welcome_path).should == "/#{I18n.t :welcome, :scope => :named_routes}"
       I18n.locale = :fr
     end
-    
+
     it "named_route generates route from route path when route name  not available" do
       routes.send(:welcome_path).should == "/#{I18n.t 'welcome/to/our/page', :scope => :named_routes_path}"
-    end 
-    
+    end
+
     it "doesn't translate empty route" do
       routes.send(:empty_path).should_not == "/#{I18n.t 'empty', :scope => :named_routes_path}"
       routes.send(:empty_path).should == "/empty"
@@ -289,6 +289,15 @@ describe :localized_routes do
       end
     end
 
+    it "url_for generates routes using localized values even with format specified" do
+      url_for(:controller => :users, :format => "html").should == "/#{I18n.t :as, :scope => :'routes.users'}.html"
+      url_for(:controller => :about, :action => :show, :format => "html").should == "/#{I18n.t :about, :scope => :named_routes_path}.html"
+      if rails3?
+        url_for(:controller => :about2, :action => :show, :format => "html").should == "/#{I18n.t :about2, :scope => :named_routes_path}.html"
+        url_for(:controller => :pages, :action => :home, :format => "html").should == "/#{I18n.t :home, :scope => :named_routes_path}.html"
+      end
+    end
+
     if !rails3?
       it "url_for generates routes for drones with path prefix" do
         url_for(:controller => :drones).should == "#{I18n.t :path_prefix, :scope => :'routes.drones'}/#{I18n.t :as, :scope => :'routes.drones'}"
@@ -307,24 +316,24 @@ describe :localized_routes do
     end
 
     context "with path_names" do
-      
+
       it "default translated path names" do
         routes.send(:new_universe_path).should == "/#{I18n.t :universes, :scope => :resources}/#{I18n.t :new, :scope => :path_names}"
         routes.send(:edit_universe_path, 42).should == "/#{I18n.t :universes, :scope => :resources}/42/#{I18n.t :edit, :scope => :path_names}"
       end
-      
+
       it "custom translated path names" do
         routes.send(:new_user_path).should == "/#{I18n.t :users, :scope => :resources}/#{I18n.t :new, :scope => :'routes.users.path_names'}"
         routes.send(:edit_user_path, 42).should == "/#{I18n.t :users, :scope => :resources}/42/#{I18n.t :edit, :scope => :'routes.users.path_names'}"
       end
-      
+
     end
-    
+
     context "with member and collection" do
 
       it "custom member" do
         I18n.locale = :en
-        routes.send(:level_user_path, 42).should == "/#{I18n.t :users, :scope => :resources}/42/level"        
+        routes.send(:level_user_path, 42).should == "/#{I18n.t :users, :scope => :resources}/42/level"
         I18n.locale = :fr
         routes.send(:level_user_path, 42).should == "/#{I18n.t :users, :scope => :resources}/42/#{I18n.t :level, :scope => :'routes.users.path_names'}"
         routes.send(:one_user_path, 42).should == "/#{I18n.t :users, :scope => :resources}/42/#{I18n.t :one, :scope => :'routes.users.path_names'}"
@@ -333,7 +342,7 @@ describe :localized_routes do
 
       it "custom collection" do
         I18n.locale = :en
-        routes.send(:groups_users_path).should == "/#{I18n.t :users, :scope => :resources}/groups"        
+        routes.send(:groups_users_path).should == "/#{I18n.t :users, :scope => :resources}/groups"
         I18n.locale = :fr
         routes.send(:groups_users_path).should == "/#{I18n.t :users, :scope => :resources}/#{I18n.t :groups, :scope => :'routes.users.path_names'}"
       end
@@ -396,7 +405,7 @@ describe :localized_routes do
 
     it "nested resources do not deep translate with multi helpers" do
       nested_routes.keys.should_not include(:fr_author_books) # Do not want fr_author_books
-    end    
+    end
 
   end
 
@@ -420,7 +429,7 @@ describe :localized_routes do
         #routes.send(:weshs_path).should == "/#{I18n.t :german, :scope => :scopes}/#{I18n.t :weshs, :scope => :resources}"
         #routes.send(:wesh_in_wesh_path).should == "/#{I18n.t :german, :scope => :scopes}/#{I18n.t :weshs, :scope => :resources}/#{I18n.t :in_weshs, :scope => :resources}"
       end
-    
+
     end
   end
 
@@ -433,11 +442,11 @@ describe :localized_routes do
     it 'users resources' do
       routes.send(:users_path).should == "/#{I18n.t :users, :scope => :'resources'}"
     end
-    
+
     it "routes for the singleton resource alone should be translated correctly" do
       routes.send(:foo_path).should == "/#{I18n.t :foo, :scope => :resource}"
     end
-    
+
     it "named_route generates route using localized values" do
       routes.send(:about_path).should == "/#{I18n.t :about, :scope => :named_routes_path}"
       if rails3?
@@ -445,11 +454,11 @@ describe :localized_routes do
         routes.send(:main_path).should == "/#{I18n.t :home, :scope => :named_routes_path}"
       end
     end
-    
+
     it "custom translated path names" do
       routes.send(:new_user_path).should == "/#{I18n.t :users, :scope => :resources}/#{I18n.t :new, :scope => :'path_names'}"
     end
-    
+
   end
 
   # context "just output" do

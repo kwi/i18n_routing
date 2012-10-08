@@ -7,7 +7,7 @@ module I18nRouting
   module Mapper
 
     private
-    
+
     # Just create a Mapper:Resource with given parameters
     def resource_from_params(type, *resources)
       res = resources.clone
@@ -17,7 +17,7 @@ module I18nRouting
 
       type == :resource ? ActionDispatch::Routing::Mapper::SingletonResource.new(r, options.dup) : ActionDispatch::Routing::Mapper::Resource.new(r, options.dup)
     end
-    
+
     # Localize a resources or a resource
     def localized_resources(type = :resources, *resources, &block)
       localizable_route = nil
@@ -42,7 +42,7 @@ module I18nRouting
             opts = options.dup
             opts[:path] = localized_path
             opts[:controller] ||= r.to_s.pluralize
-            
+
             resource = resource_from_params(type, r, opts.dup)
 
             res = ["#{I18nRouting.locale_escaped(locale)}_#{r}".to_sym, opts]
@@ -53,7 +53,7 @@ module I18nRouting
             scope(:constraints => constraints, :path_names => I18nRouting.path_names(resource.name, @scope)) do
               localized_branch(locale) do
                 send(type, *res) do
-                  
+
                   # In the resource(s) block, we need to keep and restore some context :
                   if block
                     old_name = @scope[:i18n_real_resource_name]
@@ -92,7 +92,7 @@ module I18nRouting
     # If yes, localizable is a name, or a Mapper::Resource
     # Can take a block, if so, save the current context, set the new
     # Call the block, then restore the old context and return the block return
-    def set_localizable_route(localizable)      
+    def set_localizable_route(localizable)
       if block_given?
         old = @set.named_routes.localizable
         @set.named_routes.set_localizable_route(localizable)
@@ -103,11 +103,11 @@ module I18nRouting
         @set.named_routes.set_localizable_route(localizable)
       end
     end
-    
+
     def localizable_route
       @set.named_routes.localizable
     end
-    
+
     # Return the aproximate deep in scope level
     def nested_deep
       (@scope and Array === @scope[:nested_deep] and @scope[:scope_level]) ? @scope[:nested_deep].size : 0
@@ -156,7 +156,7 @@ module I18nRouting
         I18n.load_path = (I18n.load_path << Dir[Rails.root.join('config', 'locales', '*.yml')]).flatten.uniq
         @i18n_routing_path_set = true
       end
-      
+
       old_value = @locales
       @locales = locales
       @i18n_verbose ||= opts.delete(:verbose)
@@ -164,7 +164,7 @@ module I18nRouting
     ensure
       @locales = old_value
     end
-    
+
     # Create a branch for create routes in the specified locale
     def localized_branch(locale)
       set_localizable_route(nil) do
@@ -176,7 +176,7 @@ module I18nRouting
         @localized_branch = old
       end
     end
-    
+
     # Set we do not want to localize next resource
     def skip_localization
       old = @skip_localization
@@ -227,7 +227,7 @@ module I18nRouting
 
       super
     end
-    
+
     def create_globalized_resources(type, *resources, &block)
       #puts "#{' ' * nested_deep}Call #{type} : #{resources.inspect} (#{@locales.inspect}) (#{@localized_branch}) (#{@skip_localization})"
 
@@ -254,16 +254,16 @@ module I18nRouting
           send("#{type}_without_i18n_routing".to_sym, *resources, &block)
         end
       end
-      
+
       @scope[:nested_deep].pop
     end
-    
+
     # Alias methods in order to handle i18n routes
     def self.included(mod)
       mod.send :alias_method_chain, :initialize, :i18n_routing
       mod.send :alias_method_chain, :resource, :i18n_routing
       mod.send :alias_method_chain, :resources, :i18n_routing
-      
+
       # Here we redefine some methods, in order to handle
       # correct path_names translation on the fly
       [:map_method, :member, :collection].each do |m|
@@ -272,7 +272,7 @@ module I18nRouting
           if @localized_branch and @scope[:i18n_scope_level_resource] and @scope[:i18n_real_resource_name]
             o = @scope[:scope_level_resource]
             @scope[:scope_level_resource] = @scope[:i18n_scope_level_resource]
-      
+
             pname = @scope[:path_names] || {}
             i = 1
             while i < args.size and (String === args[i] or Symbol === args[i])
@@ -285,18 +285,18 @@ module I18nRouting
             @scope[:scope_level_resource] = o
             return
           end
-      
+
           send(rfname, *args, &block)
         end
-      
+
         mod.send :alias_method_chain, m, :i18n_routing
       end
     end
-    
+
     def resource_with_i18n_routing(*resources, &block)
       create_globalized_resources(:resource, *resources, &block)
     end
-    
+
     def resources_with_i18n_routing(*resources, &block)
       create_globalized_resources(:resources, *resources, &block)
     end
@@ -313,11 +313,12 @@ module I18nRouting
       # try to get translated path :
       I18n.locale = locale
       ts = @path.gsub(/^\//, '')
+      append_format = ts =~ /\(\.:format\)/
       ts.gsub!('(.:format)', '')
-      
-      tp = @options[:as] && I18nRouting.translation_for(@options[:as], :named_routes) || 
+
+      tp = @options[:as] && I18nRouting.translation_for(@options[:as], :named_routes) ||
           !ts.blank? && I18nRouting.translation_for(ts, :named_routes_path) || ts
-      
+
       localized_scope = I18nRouting.translation_for(@scope[:path].gsub(/\//, ''), :scopes) if @scope[:path]
       path = localized_scope ? '/' << localized_scope : @scope[:path]
       @localized_path = File.join((path || ''), tp).gsub(/\/$/, '')
@@ -327,6 +328,7 @@ module I18nRouting
         #@options[:controller] ||= @options[:as]
         @options[:as] = "#{I18nRouting.locale_escaped(locale)}_#{@options[:as]}"
         @path = @localized_path
+        @path = "#{@path}(.:format)" if append_format
         @options[:constraints] = @options[:constraints] ? @options[:constraints].dup : {}
         @options[:constraints][:i18n_locale] = locale.to_s
         @options[:anchor] = true
