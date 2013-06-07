@@ -50,7 +50,7 @@ module I18nRouting
             constraints = opts[:constraints] ? opts[:constraints].dup : {}
             constraints[:i18n_locale] = locale.to_s
 
-            scope(:constraints => constraints, :path_names => I18nRouting.path_names(resource.name, @scope)) do
+            scope(constraints.merge(:path_names => I18nRouting.path_names(resource.name, @scope))) do
               localized_branch(locale) do
                 send(type, *res) do
 
@@ -251,11 +251,7 @@ module I18nRouting
       set_localizable_route(cur_scope) do
         skip_localization do
           #puts "#{' ' * nested_deep} \\- Call original #{type} : for #{resources.inspect}}"
-          begin
-            send("#{type}_without_i18n_routing".to_sym, *resources, &block)
-          rescue Exception => e
-            puts e
-          end
+          send("#{type}_without_i18n_routing".to_sym, *resources, &block)
         end
       end
 
@@ -334,6 +330,7 @@ module I18nRouting
         @path = @localized_path
         @path = "#{@path}(.:format)" if append_format
         @options[:constraints] = @options[:constraints] ? @options[:constraints].dup : {}
+
         @options[:constraints][:i18n_locale] = locale.to_s
         @options[:anchor] = true
         # Force the recomputation of the requirements with the new values

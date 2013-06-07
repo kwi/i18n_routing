@@ -26,6 +26,29 @@ module I18nRouting
     end
   end
 
+  #   # Return the correct translation for given values
+  # def self.translation_for(name, type = :resources, option = nil)
+  #   # First, if an option is given, try to get the translation in the routes scope
+  #   if option
+  #     default = "{option}Noi18nRoutingTranslation"
+  #     t = I18n.t(option, :scope => "routes.#{name}.#{type}", :default => default)
+  #     return (t == default ? nil : t)
+  #   else
+  #     default = "{name}Noi18nRoutingTranslation"
+ 
+  #     # Try to get the translation in routes namescope first      
+  #     t = I18n.t(:as, :scope => "routes.#{name}", :default => default)
+ 
+  #     t = I18n.t(name.to_s, :scope => type, :default => default)
+  #     return t if t and t != default
+      
+  #     # this is what I added
+  #     t = I18n.t(name.to_s.gsub('/', '_'), :scope => type, :default => default)
+  #     return (t == default ? nil : t)
+            
+  #   end
+  # end
+
   DefaultPathNames = [:new, :edit]
   PathNamesKeys = [:path_names, :member, :collection]
 
@@ -37,7 +60,7 @@ module I18nRouting
     PathNamesKeys.each do |v|
       path_names += options[v].keys if options[v] and Hash === options[v]
     end
-    
+
     path_names.each do |pn|
       n = translation_for(name, :path_names, pn)
       n = nil if n == pn.to_s
