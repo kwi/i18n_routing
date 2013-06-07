@@ -42,13 +42,13 @@ module I18nRouting
             opts = options.dup
             opts[:path] = localized_path
             opts[:controller] ||= r.to_s.pluralize
+            opts[:i18n_locale] = locale.to_sym
 
             resource = resource_from_params(type, r, opts.dup)
 
             res = ["#{I18nRouting.locale_escaped(locale)}_#{r}".to_sym, opts]
 
             constraints = opts[:constraints] ? opts[:constraints].dup : {}
-            constraints[:i18n_locale] = locale.to_s
 
             scope(constraints.merge(:path_names => I18nRouting.path_names(resource.name, @scope))) do
               localized_branch(locale) do
