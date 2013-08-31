@@ -1,5 +1,5 @@
 # encoding: utf-8
-require 'action_dispatch/journey/router'
+require 'action_dispatch/journey'
 require 'action_dispatch'
 require 'active_support/core_ext/module'
 
@@ -244,7 +244,7 @@ module I18nRouting
         if !@localized_branch
           r = resource_from_params(type, *resources)
           parent_resource.inspect
-          cur_scope = (parent_resource and parent_resource.name == r.name) ? parent_resource : r 
+          cur_scope = (parent_resource and parent_resource.name == r.name) ? parent_resource : r
         end
       end
 
