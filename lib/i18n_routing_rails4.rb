@@ -274,9 +274,10 @@ module I18nRouting
             @scope[:scope_level_resource] = @scope[:i18n_scope_level_resource]
 
             pname = @scope[:path_names] || {}
+            flattened_args = args.flatten
             i = 1
-            while i < args.size and (String === args[i] or Symbol === args[i])
-              pname[args[i]] = args[i]
+            while i < flattened_args.size and (String === flattened_args[i] or Symbol === flattened_args[i])
+              pname[flattened_args[i]] = flattened_args[i]
               i += 1
             end
             scope(:path_names => I18nRouting.path_names(@scope[:i18n_real_resource_name], {:path_names => pname})) do
