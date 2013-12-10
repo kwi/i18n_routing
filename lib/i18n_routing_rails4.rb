@@ -335,7 +335,9 @@ module I18nRouting
         @options[:constraints][:i18n_locale] = locale.to_s
         @options[:anchor] = true
         # Force the recomputation of the requirements with the new values
-        @requirements = {} # nil
+        @requirements = @options[:constraints]
+        normalize_requirements!
+        normalize_conditions!
       else
         @localized_path = nil
       end
