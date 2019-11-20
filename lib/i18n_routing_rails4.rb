@@ -1,5 +1,5 @@
 # encoding: utf-8
-require 'journey'
+require 'action_dispatch/journey'
 require 'action_dispatch'
 require 'active_support/core_ext/module'
 
@@ -42,15 +42,15 @@ module I18nRouting
             opts = options.dup
             opts[:path] = localized_path
             opts[:controller] ||= r.to_s.pluralize
+            opts[:i18n_locale] = locale.to_sym
 
             resource = resource_from_params(type, r, opts.dup)
 
             res = ["#{I18nRouting.locale_escaped(locale)}_#{r}".to_sym, opts]
 
             constraints = opts[:constraints] ? opts[:constraints].dup : {}
-            constraints[:i18n_locale] = locale.to_s
 
-            scope(:constraints => constraints, :path_names => I18nRouting.path_names(resource.name, @scope)) do
+            scope(constraints.merge(:path_names => I18nRouting.path_names(resource.name, @scope))) do
               localized_branch(locale) do
                 send(type, *res) do
 
@@ -121,19 +121,19 @@ module I18nRouting
       initialize_without_i18n_routing(*args)
 
       # Add i18n_locale as valid conditions for Rack::Mount / And add also :locale, as Rails 3.0.4 removed it ...
-      @valid_conditions = @set.instance_eval { @set }.instance_eval { @valid_conditions }
-      [:i18n_locale, :locale].each do |k|
-        @set.valid_conditions[k] = true if !@set.valid_conditions.has_key?(k)
-      end
+      # @valid_conditions = @set.instance_eval { @set }.instance_eval { @valid_conditions }
+      # [:i18n_locale, :locale].each do |k|
+      #   @set.valid_conditions[k] = true if !@set.valid_conditions.has_key?(k)
+      # end
 
       # Extends the current RouteSet in order to define localized helper for named routes
       # When calling define_url_helper, it calls define_localized_url_helper too.
       if !@set.named_routes.respond_to?(:define_localized_url_helper)
         @set.named_routes.class_eval <<-END_EVAL, __FILE__, __LINE__ + 1
           alias_method :localized_define_url_helper, :define_url_helper
-          def define_url_helper(route, name, kind, options)
-            localized_define_url_helper(route, name, kind, options)
-            define_localized_url_helper(route, name, kind, options)
+          def define_url_helper(route, name, options)
+            localized_define_url_helper(route, name, options)
+            define_localized_url_helper(route, name, options)
           end
         END_EVAL
 
@@ -243,6 +243,7 @@ module I18nRouting
         # Set the current standard resource in order to customize url helper :
         if !@localized_branch
           r = resource_from_params(type, *resources)
+          parent_resource.inspect
           cur_scope = (parent_resource and parent_resource.name == r.name) ? parent_resource : r
         end
       end
@@ -273,9 +274,10 @@ module I18nRouting
             @scope[:scope_level_resource] = @scope[:i18n_scope_level_resource]
 
             pname = @scope[:path_names] || {}
+            flattened_args = args.flatten
             i = 1
-            while i < args.size and (String === args[i] or Symbol === args[i])
-              pname[args[i]] = args[i]
+            while i < flattened_args.size and (String === flattened_args[i] or Symbol === flattened_args[i])
+              pname[flattened_args[i]] = flattened_args[i]
               i += 1
             end
             scope(:path_names => I18nRouting.path_names(@scope[:i18n_real_resource_name], {:path_names => pname})) do
@@ -329,10 +331,13 @@ module I18nRouting
         @path = @localized_path
         @path = "#{@path}(.:format)" if append_format
         @options[:constraints] = @options[:constraints] ? @options[:constraints].dup : {}
+
         @options[:constraints][:i18n_locale] = locale.to_s
         @options[:anchor] = true
         # Force the recomputation of the requirements with the new values
-        @requirements = nil
+        @requirements = @options[:constraints]
+        normalize_requirements!
+        normalize_conditions!
       else
         @localized_path = nil
       end
@@ -354,9 +359,12 @@ module I18nRouting
 
     # Alias named route helper in order to check if a localized helper exists
     # If not use the standard one.
-    def define_localized_url_helper(route, name, kind, options)
+    def define_localized_url_helper(route, name, options)
       if n = localizable
-        selector = url_helper_name(name, kind)
+        # rails 4 fix
+        selector = name
+        name = name.to_s.sub(/_(path|url)/,'').to_sym
+        # rails 4 fix end
 
         rlang = if n.kind_of?(ActionDispatch::Routing::Mapper::Resources::Resource) and i = name.to_s.rindex("_#{n.plural}")
                   "#{selector.to_s[0, i]}_glang_#{n.plural}#{selector.to_s[i + "_#{n.plural}".size, selector.to_s.size]}"
@@ -416,5 +424,5 @@ module I18nRouting
   end
 end
 
-ActionDispatch::Routing::Mapper.send  :include, I18nRouting::Mapper
-Journey::Route.send                   :include, I18nRouting::JourneyRoute
+ActionDispatch::Routing::Mapper.send :include, I18nRouting::Mapper
+ActionDispatch::Journey::Route.send  :include, I18nRouting::JourneyRoute

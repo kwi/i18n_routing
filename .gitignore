@@ -1,4 +1,5 @@
 *.gem
 .loadpath
 .project
+.DS_Store
 *~

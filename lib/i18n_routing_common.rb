@@ -5,7 +5,7 @@ module I18nRouting
   def self.locale_escaped(locale)
     locale.to_s.downcase.gsub('-', '_')
   end
-  
+
   # Return the correct translation for given values
   def self.translation_for(name, type = :resources, option = nil)
     # First, if an option is given, try to get the translation in the routes scope
@@ -16,7 +16,7 @@ module I18nRouting
     else
       default = "{name}Noi18nRoutingTranslation"
 
-      # Try to get the translation in routes namescope first      
+      # Try to get the translation in routes namescope first
       t = I18n.t(:as, :scope => "routes.#{name}", :default => default)
 
       return t if t and t != default
@@ -32,12 +32,12 @@ module I18nRouting
   # Return path names hash for given resource
   def self.path_names(name, options)
     h = (options[:path_names] || {}).dup
-    
+
     path_names = DefaultPathNames
     PathNamesKeys.each do |v|
       path_names += options[v].keys if options[v] and Hash === options[v]
     end
-    
+
     path_names.each do |pn|
       n = translation_for(name, :path_names, pn)
       n = nil if n == pn.to_s
